@@ -191,7 +191,7 @@
 						ctx.moveTo(centerX,centerY-width/2-20);	
 						ctx.font="40px Arial";
 						ctx.fontStyle="bold";
-						ctx.fillStyle="blue";
+						ctx.fillStyle="#faebc1";
 						ctx.fillText(roundHourDistance(value), centerX-clock_width/2+40, centerY-20, width -40);
 						ctx.beginPath();
 						ctx.fillText(hour2Letter(value), centerX+10, centerY+40, width -40);
