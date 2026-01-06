@@ -21,7 +21,7 @@ class ClockGame {
         this.change_listeners = [];
 
         this.canvas.addEventListener("mousemove", (e) => this._on_mouse_move(e));
-        this.canvas.addEventListener("mouseup", (e) => this._on_mouse_up(e));
+        this.canvas.addEventListener("click", (e) => this._on_mouse_up(e));
 
         this.game_status = GameStatus.Welcome;
         this.drawn=false;
@@ -95,21 +95,37 @@ class ClockGame {
         if ( this.clickacle_elements == undefined) {
             this.clickacle_elements=[ 
                 //Pin0
-                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 20,this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 20,40,40 ),
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 40,this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 40,80,80 ),
                     ()=>{ this.clock_view.current_pins[0].invert()}
                 ),
                 //Pin1
-                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 20,this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 20,40,40 ),
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 40,this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 40,80,80 ),
                     ()=>{ this.clock_view.current_pins[1].invert()}
                 ),
                 //Pin2
-                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 20,this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 20,40,40 ),
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3 + this.clock_drawer.outer_clock_margin - 40,this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 40,80,80 ),
                     ()=>{ this.clock_view.current_pins[2].invert()}
                 ),
                 //Pin3
-                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 20,this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 20,40,40 ),
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 40,this.clock_drawer.outer_clock_size / 3*2 + this.clock_drawer.outer_clock_margin - 40,80,80 ),
                     ()=>{ this.clock_view.current_pins[3].invert()}
-                )
+                ),
+                //gear UL
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin,this.clock_drawer.outer_clock_margin,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.rotate_gear_UL(1)}
+                ),         
+                //gear UR
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin*2+ this.clock_drawer.outer_clock_size / 3*2 ,this.clock_drawer.outer_clock_margin,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.rotate_gear_UR(1)}
+                ),                           
+                //gear DL
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin,this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size / 3*2 ,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.rotate_gear_DL(1)}
+                ),         
+                //gear DR
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size / 3*2 ,this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size / 3*2 ,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.rotate_gear_DR(1)}
+                ),                 
             ];
         }
     }
