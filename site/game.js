@@ -23,7 +23,6 @@ class ClockGame {
 
         this.canvas.addEventListener("mousemove", (e) => this._on_mouse_move(e));
         this.canvas.addEventListener("click", (e) => this._on_mouse_up(e));
-        this.canvas.addEventListener("touchstart", (e) => e.preventDefault());
         
         this.game_status = GameStatus.Welcome;
         this.drawn=false;
