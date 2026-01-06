@@ -7,6 +7,7 @@ const GameStatus = {
     Lose: 3
 }
 
+
 class ClockGame {
 
     constructor(canvas) {
@@ -22,7 +23,8 @@ class ClockGame {
 
         this.canvas.addEventListener("mousemove", (e) => this._on_mouse_move(e));
         this.canvas.addEventListener("click", (e) => this._on_mouse_up(e));
-
+        this.canvas.addEventListener("touchstart", (e) => e.preventDefault());
+        
         this.game_status = GameStatus.Welcome;
         this.drawn=false;
         this.last_scramble=[];
@@ -125,7 +127,26 @@ class ClockGame {
                 //gear DR
                 new ClickableArea(new Area( this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size / 3*2 ,this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size / 3*2 ,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
                     ()=>{ this.clock_view.rotate_gear_DR(1)}
-                ),                 
+                ),  
+                //gear U - flipX2               
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size/3 ,this.clock_drawer.outer_clock_margin,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.flipX2()}
+                ),  
+
+                //gear D - flipX2               
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size/3 ,this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size / 3*2,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.flipX2()}
+                ),  
+
+                //gear L - flipY2               
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin,this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size/3,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.flipY2()}
+                ),  
+
+                //gear R - flipX2               
+                new ClickableArea(new Area( this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size/3*2,this.clock_drawer.outer_clock_margin*2+this.clock_drawer.outer_clock_size/3,this.clock_drawer.inner_clock_size,this.clock_drawer.inner_clock_size ),
+                    ()=>{ this.clock_view.flipY2()}
+                ),  
             ];
         }
     }
