@@ -456,7 +456,7 @@
 					}
 
 					if (!current_pins[2].is_up) {
-						inner_clocks[7].increase(steps);
+						inner_clocks[6].increase(steps);
 					}
 				}				
 			}
