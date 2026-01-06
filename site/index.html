@@ -124,6 +124,7 @@
 
 	</style>
 	<script src="model.js"></script>
+	<script src="solution.js"></script>
 	<script src="graphics.js"></script>
 	<script src="game.js"></script>
 	<script>
@@ -168,7 +169,8 @@
 		function write_solution(c) {
 			var solution = document.getElementById("solution");
 			solution7SimulBpaul=compute7SimulBPaul(c);
-			solution.innerHTML =  "7 simul flip (Bpaul): "+array2Letters(solution7SimulBpaul)+" ("+solution7SimulBpaul+")";
+			solution.innerHTML =  "7 simul flip (Bpaul): "+array2Letters(solution7SimulBpaul)+" ("+solution7SimulBpaul+")" + 
+			" test: "+ (test7SimulBPaul(c) ? "OK" :"KO");
 			
 		}
 
@@ -282,8 +284,14 @@
 
 
 		function show_solution() {
-			var solution = document.getElementById("solution");
-			solution.style.display = solution.style.display  != "block" ? "block" :" none";
+			var divSolution = document.getElementById("divSolution");
+			divSolution.style.display = divSolution.style.display  != "block" ? "block" :" none";
+		}
+
+		function test_solution() {
+			clock_game.execute((c,v) => {
+				exec7SimulBPaul(c);
+			});
 		}
 		
 		function show_settings() {
@@ -414,7 +422,11 @@
 				<input type="button" class="red" onclick="new_game();" value="New game"/>	
 			</div>
 
-			<div id="solution" class="solution" style="display: none;"></div>
+			<div id="divSolution" class="solution" style="display: none;">
+				<span id="solution"></span>
+				<br/>
+				<input type="button" class="white" onClick="test_solution();" value="Test"/>	
+			</div>
 
 			<div class="clockInputs" id="clockInputs">
 				<table style="background-color: #a3a3a3; padding: 10px;">

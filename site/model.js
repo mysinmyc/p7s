@@ -33,29 +33,6 @@
 			return result;
 		}		
 
-		function compute7SimulBPaul(clock) {
-
-			const A = {
-				U: clock.inner_clocks[1].value, L: clock.inner_clocks[3].value, R: clock.inner_clocks[5].value, D: clock.inner_clocks[7].value, 
-				C: clock.inner_clocks[4].value,
-				UL: clock.inner_clocks[0].value, UR: clock.inner_clocks[2].value, DL: clock.inner_clocks[6].value, DR: clock.inner_clocks[8].value
-			};
-			const B = {
-				U: clock.inner_clocks[16].value, L: clock.inner_clocks[14].value, R: clock.inner_clocks[12].value, D: clock.inner_clocks[10].value, 
-				C: clock.inner_clocks[13].value,
-				UL: clock.inner_clocks[17].value, UR: clock.inner_clocks[15].value, DL: clock.inner_clocks[11].value, DR: clock.inner_clocks[9].value
-			};
-
-			const m1 = roundHourDistance(moveHourTo(A.R,A.D) + moveHourTo(B.L,B.UL));
-			const m2 = moveHourTo(B.U,B.C);
-			const m3 = moveHourTo(B.L,B.U);
-			const m4 = roundHourDistance(moveHourTo(B.R,B.D) + moveHourTo(A.L,A.UL));
-			const m5 = moveHourTo(A.U,A.C);
-			const m6 = moveHourTo(A.L,A.U);
-
-			return [m1, m2, m3, m4, m5, m6 ];
-		}
-
 		class Pin {
 			constructor(up,id) {
 				this.up = up;
@@ -174,6 +151,12 @@
 				for (let cnt=0;cnt<4;cnt++) {
 					this.pins_a[cnt] = new Pin(serialized_clock.pins[cnt],cnt);
 				}
+			}
+
+			clone() {
+				var result = new Clock();
+				result.deserialize(this.serialize());
+				return result
 			}
 		}
 
