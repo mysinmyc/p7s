@@ -80,12 +80,14 @@
 				for (var cnt =0 ; cnt < 4 ; cnt++) {
 					this.ctx.beginPath();
 					this.ctx.arc(this.outer_clock_margin+(this.outer_clock_size / 3)*(cnt%2+1),this.outer_clock_margin+this.outer_clock_size/3*(Math.trunc(cnt/2)+1), 15, 0 , 2 * Math.PI);
-					if (this.is_reverse_color) {
-						this.ctx.fillStyle= pins[cnt].is_up ? "#aeaeae" : "#161616";
+					if (pins[cnt].is_up) {
+						this.ctx.fillStyle= this.is_reverse_color ? "#aeaeae" : "#161616";
+						this.ctx.fill();
 					} else {
-						this.ctx.fillStyle= pins[cnt].is_up ? "#313131" : "#a3a3a3";
+						this.ctx.strokeStyle = this.is_reverse_color ? "#a3a3a3":"#313131" ;
+						this.ctx.stroke();
 					}
-					this.ctx.fill();					
+					
 
 					if (this.show_values) {
 						this.ctx.font="40px Arial";
