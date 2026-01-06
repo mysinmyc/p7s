@@ -22,6 +22,25 @@
 			cursor: pointer;
 		}
 
+		input[type=button].red  {
+			background-color: darkred;
+			border: none;
+			color: white;
+		}
+
+
+		input[type=button].green  {
+			background-color: darkgreen;
+			border: none;
+			color: white;
+		}		
+
+		input[type=button].white  {
+			background-color: white;
+			border: none;
+			color: #925892;
+		}		
+
 		input.inputClock {
 			width: 100%; 
 			height: 100%; 
@@ -38,13 +57,21 @@
 			border-radius: 25px;
 			padding: 20px;
 			background-color: #fff3c1;
-			position: fixed;
-    		bottom: 20px;
-    		right: 20px;
 			vertical-align: middle;
 		}
 
 		.solution {
+			border-radius: 25px;
+			padding: 20px;
+			background-color: green;
+			font-size:  40;
+			color: white;
+			margin-top: 20px;			
+			margin-bottom: 20px;			
+			width: fit-content;
+		}
+
+		.win {
 			border-radius: 25px;
 			padding: 20px;
 			background-color: green;
@@ -91,43 +118,33 @@
 		.clocks {
 			margin-top: 20px;			
 			margin-bottom: 20px;			
-		}
-
-		@media only screen and (min-width: 1300px) {
-			.clocks {
-			 	display: flex; 
-				width: fit-content;
-			}
+		 	display: flex; 
+			width: fit-content;
 		}
 
 	</style>
-	<script src="clock.js">
-
-	</script>
+	<script src="model.js"></script>
+	<script src="graphics.js"></script>
+	<script src="game.js"></script>
 	<script>
 
-		const clock = new Clock();
+		var clock_game;
 
 		const default_settings = {
 			show_values: false,
-			show_one_clock: true,
-			reverse_second_clock: true,
-			first_clock_face_a: true,
-			show_editor: false
+			show_editor: false,
+			scramble: 12
 		}
 
 		var settings = default_settings;
 
 		function update_clock_data(uiToDomain) {
-			for (var cnt=0;cnt<9;cnt++) {	
-				controlA=document.getElementById("faceA"+cnt); 
-				controlB=document.getElementById("faceB"+cnt); 
+			for (var cnt=0;cnt<18;cnt++) {	
+				inputValue=document.getElementById("innerClockValue"+cnt); 
 				if (uiToDomain) {
-					clock.face_a[cnt]=parseInt(controlA.value);
-					clock.face_b[cnt]=parseInt(controlB.value);
+					clock_game.clock.inner_clocks[cnt].value=parseInt(inputValue.value);
 				} else {
-					controlA.value=clock.face_a[cnt];
-					controlB.value=clock.face_b[cnt];
+					inputValue.value=clock_game.clock.inner_clocks[cnt].value;
 				}
 			
 			}	
@@ -135,109 +152,134 @@
 		
 		function update_settings(uiToDomain) {
 			chkShowValues = document.getElementById("chkShowValues");
-			chkOneClock = document.getElementById("chkOneClock");
-			chkReverseSecondClock = document.getElementById("chkReverseSecondClock");
 			chkEdit = document.getElementById("chkEdit");
+			inputScramble = document.getElementById("inputScramble");
 			if (uiToDomain) {
 				settings.show_values = chkShowValues.checked;
-				settings.show_one_clock = chkOneClock.checked;
-				settings.reverse_second_clock = chkReverseSecondClock.checked;				
-				settings.show_editor = chkEdit.checked;				
+				settings.show_editor = chkEdit.checked;
+				settings.scramble = parseInt(inputScramble.value);				
 			} else {
 				chkShowValues.checked = settings.show_values;
-				chkOneClock.checked = settings.show_one_clock;
-				chkReverseSecondClock.checked = settings.reverse_second_clock;
 				chkEdit.checked = settings.show_editor;
+				inputScramble.value = settings.scramble;
 			}
 		}
 
-		function write_solution() {
+		function write_solution(c) {
 			var solution = document.getElementById("solution");
-			solution7SimulBpaul=compute7SimulBPaul(clock.face_a,clock.face_b);
+			solution7SimulBpaul=compute7SimulBPaul(c);
 			solution.innerHTML =  "7 simul flip (Bpaul): "+array2Letters(solution7SimulBpaul)+" ("+solution7SimulBpaul+")";
-		}
-
-		function draw_clock() {
-
-			var clock_drawer = new ClockDrawer(clock);
-
-			myCanvasA = document.getElementById("myCanvasA");
-			myCanvasB = document.getElementById("myCanvasB");
-
-			myCanvasB.style.display =  settings.show_one_clock ? "none" : "block";
-			if (settings.first_clock_face_a) {
-				clock_drawer.draw_face_a(myCanvasA.getContext("2d"),myCanvasA.clientWidth,myCanvasA.clientHeight,settings.show_values);
-				if (!settings.show_one_clock) {
-					clock_drawer.draw_face_b(myCanvasB.getContext("2d"),myCanvasB.clientWidth,myCanvasB.clientHeight,settings.show_values,settings.reverse_second_clock);
-				}
-			} else {
-				clock_drawer.draw_face_b(myCanvasA.getContext("2d"),myCanvasA.clientWidth,myCanvasA.clientHeight,settings.show_values,settings.reverse_second_clock);				
-				if (!settings.show_one_clock) {
-					clock_drawer.draw_face_a(myCanvasB.getContext("2d"),myCanvasB.clientWidth,myCanvasB.clientHeight,settings.show_values);
-				}
-				
-			}
 			
-			update_clock_data(false);
-
-			write_solution();
-	
-		}	
+		}
 
 		function refreshComponents() {
 			clockInputs= document.getElementById("clockInputs");
-			clockInputs.style.display = settings.show_editor ? "block" : "none";	
+			clockInputs.style.display = settings.show_editor ? "block" : "none";
+			clock_game.scramble_to_execute=settings.scramble;			
+			clock_game.execute((c,v)=> {
+				clock_game.clock_drawer.show_values = settings.show_values;
+			},true);			
 		}
 
 
 		function reset() {
-			clock.reset();
+			clock_game.reset();
 			settings = default_settings;
-			save_state();			
-			update_settings(false);
-			draw_clock();
-			
+			save_settings();			
+			update_settings(false);	
 		}
 
-		function scramble_clock() {
-			clock.scramble();
-			save_state();			
-			draw_clock();
+		function write_last_scramble() {
+			var scramble_str="Last scramble: ";
+			clock_game.last_scramble.forEach ( (s) => scramble_str+= s.str + " ");
+			document.getElementById("scramble").innerHTML = scramble_str;
+		}
+
+		function new_game() {
+			clock_game.new_game();
+			write_last_scramble();
 		}
 		
-		function save_state() {
-			localStorage.setItem("clockA", JSON.stringify(clock.face_a));
-			localStorage.setItem("clockB", JSON.stringify(clock.face_b));
+		function save_clock_state(c) {
+			localStorage.setItem("clock", JSON.stringify(c.serialize()));
+		}
+
+				
+		function load_clock_state(c) {
+			saved_clock=localStorage.getItem("clock");
+			if (saved_clock!= undefined) {
+					c.deserialize(JSON.parse(saved_clock));
+			}
+			update_clock_data(false);
+		}
+
+
+		function save_settings() {
 			localStorage.setItem("settings", JSON.stringify(settings));
 		}
 
-		function load_state() {
-			clock.face_a= JSON.parse(localStorage.getItem("clockA") ?? "[0,0,0,0,0,0,0,0,0]");
-			clock.face_b= JSON.parse(localStorage.getItem("clockB") ?? "[0,0,0,0,0,0,0,0,0]");
+		function load_settings() {
 			settings = JSON.parse(localStorage.getItem("settings") ?? JSON.stringify(default_settings));
-			draw_clock();
 			update_settings(false);
 			refreshComponents();
 		}
 				
 		function set_clock_data() {
-			update_clock_data(true);
-			save_state();
-			draw_clock();
+			clock_game.execute((c,v)=> update_clock_data(true));
 		}
+
 
 		function set_settings() {
 			update_settings(true);
-			save_state();
+			save_settings();
 			refreshComponents();
-			draw_clock();
+			clock_game.execute(()=>{});
 		}
 
-		function invert_clocks() {
-			settings.first_clock_face_a = ! settings.first_clock_face_a;
-			save_state();
-			draw_clock();
+		function flipX2() {
+			clock_game.execute((c,v)=>v.flipX2());
 		}
+
+		function flipY2() {
+			clock_game.execute((c,v)=>v.flipY2());
+		}
+
+		function rotate180() {
+			clock_game.execute((c,v)=>v.rotate180());
+		}
+
+		function rotate_gear_UR_plus() {
+			clock_game.execute((c,v)=>v.rotate_gear_UR(1));
+		}
+
+		function rotate_gear_UL_plus() {
+			clock_game.execute((c,v)=>v.rotate_gear_UL(1));
+		}
+
+		function rotate_gear_UR_minus() {
+			clock_game.execute((c,v)=>v.rotate_gear_UR(-1));
+		}
+
+		function rotate_gear_UL_minus() {
+			clock_game.execute((c,v)=>v.rotate_gear_UL(-1));
+		}
+
+		function rotate_gear_DR_plus() {
+			clock_game.execute((c,v)=>v.rotate_gear_DR(1));
+		}
+
+		function rotate_gear_DL_plus() {
+			clock_game.execute((c,v)=>v.rotate_gear_DL(1));
+		}
+
+		function rotate_gear_DR_minus() {
+			clock_game.execute((c,v)=>v.rotate_gear_DR(-1));
+		}
+
+		function rotate_gear_DL_minus() {
+			clock_game.execute((c,v)=>v.rotate_gear_DL(-1));
+		}
+
 
 		function show_solution() {
 			var solution = document.getElementById("solution");
@@ -246,19 +288,36 @@
 		
 		function show_settings() {
 			settings= document.getElementById("settings");
-			console.log(settings.style.display);
 			settings.style.display = settings.style.display != "block" ? "block" : "none";
 		}
 
-		function show_area() {
+		function show_game() {
 			["welcome"].forEach( e=> document.getElementById(e).style.display="none");
 			["appArea"].forEach( e=> document.getElementById(e).style.display="block");
-			load_state();
+			clock_game.start();
 		}
 
 		function init() {
-			setTimeout(show_area, 2000);
+			myCanvasA = document.getElementById("myCanvasA");
+			clock_game = new ClockGame(myCanvasA);
+			load_settings();			
+			clock_game.execute((c,v)=> load_clock_state(c),true);
+			clock_game.addChangeListener((c,v)=>update_clock_data(false));
+			clock_game.addChangeListener((c,v)=>save_clock_state(c));
+			clock_game.addChangeListener((c,v)=> {
+				document.getElementById("win").style.display = c.is_solved ? "block" : "none";
+			});
+			clock_game.addChangeListener((c,v)=> {
+				write_solution(c);
+			});			
+			clock_game.addGameListener((n,o)=> {
+				document.getElementById("win").style.display = n == GameStatus.Won;
+			});			
+			write_solution(clock_game.clock);			
+			setTimeout(show_game, 2000);
 		}
+
+
 
 	</script>
 </head>
@@ -273,7 +332,7 @@
 			</tr>
 		</table>
 	</span>
-	<span id="appArea" style="display: none; margin-top: 300;">
+	<span id="appArea" style="display: none; margin-top: 300;margin-bottom: 300;">
 
 		<center>
 
@@ -282,19 +341,77 @@
 			</div>
 
 			
-			<div class="buttonBar">
-				<input type="button" onClick="scramble_clock();" value="Scramble"/>				
+			<div class="buttonBar" style="position: fixed;top: 20px;right: 20px;">
+				<input type="button" onClick="new_game();" value="New game"/>				
 				<input type="button" onClick="show_settings();" value="Settings"/>
-				<input type="button" onClick="show_solution();" value="Solution"/>
+				<input type="button" onClick="show_solution();" value="Solution"/>			
 			</div>
 
+			<div class="buttonBar" style="position: fixed; right:20px;bottom:20px">
+				<table>
+					<tr>
+						<td>
+							<input type="button" class="red" onClick="rotate_gear_UL_minus();" value="UL -"/>
+						</td>
+						<td>
+							<input type="button" class="green" onClick="rotate_gear_UL_plus();" value="UL +"/>					
+						</td>
+						<td>
+							&nbsp;
+						</td>
+						<td>
+							<input type="button" class="red" onClick="rotate_gear_UR_minus();" value="UR -"/>
+						</td>
+						<td>
+							<input type="button" class="green" onClick="rotate_gear_UR_plus();" value="UR +"/><br/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							&nbsp;
+						</td>
+						<td>
+							<input type="button" onClick="rotate180();" value="R180°"/>
+						</td>
+						<td colspan="2" style="text-align: center;">
+							<input type="button" class="white" onClick="flipX2();" value="flip X2"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<input type="button" class="red" onClick="rotate_gear_DL_minus();" value="DL -"/>
+						</td>
+						<td>
+							<input type="button" class="green" onClick="rotate_gear_DL_plus();" value="DL +"/>					
+						</td>
+						<td>
+							<input type="button" class="white" onClick="flipY2();" value="flip Y2"/>
+						</td>
+						<td>
+							<input type="button" class="red" onClick="rotate_gear_DR_minus();" value="DR -"/>
+						</td>
+						<td>
+							<input type="button" class="green" onClick="rotate_gear_DR_plus();" value="DR +"/><br/>
+						</td>
+					</tr>					
+				</table>			
+			</div>
+						
 			<div class="settings" id="settings">
+				Scramble <input type="number" id="inputScramble" onChange="set_settings();"/></td>
+				<br/>
 				<input type="checkbox" id="chkEdit" onClick="set_settings();"/>Show Editor
 				<input type="checkbox" id="chkShowValues" onClick="set_settings();"/>Values
-				<input type="checkbox" id="chkOneClock" onClick="set_settings();"/>One Clock
-				<input type="checkbox" id="chkReverseSecondClock" onClick="set_settings();"/>Reverse second clock
 				<br/>
-				<input type="button" onClick="reset();" value="Reset"/>				
+				<input type="button" onClick="reset();" value="Reset"/>	
+				<br/>
+				<span id="scramble"></span>			
+			</div>
+
+			<div id="win" class="win" style="display: none;">
+				<h1>You win!!!</h1>
+				<br/>
+				<input type="button" class="red" onclick="new_game();" value="New game"/>	
 			</div>
 
 			<div id="solution" class="solution" style="display: none;"></div>
@@ -302,50 +419,47 @@
 			<div class="clockInputs" id="clockInputs">
 				<table style="background-color: #a3a3a3; padding: 10px;">
 					<tr>
-						<td><input type="number" class="inputClock" id="faceA0" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceA1" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceA2" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue0" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue1" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue2" onChange="set_clock_data();"/></td>
 					</tr>
 					<tr>
-						<td><input type="number" class="inputClock" id="faceA3" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceA4" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceA5" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue3" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue4" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue5" onChange="set_clock_data();"/></td>
 					</t>
 					<tr>
-						<td><input type="number" class="inputClock" id="faceA6" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceA7" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceA8" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue6" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue7" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue8" onChange="set_clock_data();"/></td>
 					</t>
 				</table>
 
 				<table style="background-color: #161616; padding: 10px;">
 					<tr>
-						<td><input type="number" class="inputClock" id="faceB0" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceB1" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceB2" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue9" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue10" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue11" onChange="set_clock_data();"/></td>
 					</tr>
 					<tr>
-						<td><input type="number" class="inputClock" id="faceB3" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceB4" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceB5" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue12" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue13" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue14" onChange="set_clock_data();"/></td>
 					</t>
 					<tr>
-						<td><input type="number" class="inputClock" id="faceB6" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceB7" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="faceB8" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue15" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue16" onChange="set_clock_data();"/></td>
+						<td><input type="number" class="inputClock" id="innerClockValue17" onChange="set_clock_data();"/></td>
 					</t>
 				</table>				
 
 			</div>	
 
 			<div class="clocks">
-				<canvas class="clockA" id="myCanvasA" width="600" height="600" onclick="invert_clocks();"></canvas>
-				<canvas class="clockB" id="myCanvasB" width="600" height="600" onclick="invert_clocks();"></canvas>		
+				<canvas class="clockA" id="myCanvasA" width="600" height="600"></canvas>
 			</div>
-
 		</center>
-
-		<br/><br/><br/><br/>
+	
 	</span>
 </body>
 </html>
