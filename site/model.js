@@ -492,9 +492,9 @@
 				this.clock_view.reset();
 				for (let cnt=0; cnt<scramble_to_execute ; cnt++) {
 					const pins_config= Math.floor(Math.random() * 9);
-					const steps= Math.floor(Math.random() * 12);
+					const steps= roundHourDistance(Math.floor(Math.random() * 12));
 					this.execute_step(pins_config,steps);
-					scramble.push ({pins_config: pins_config, steps:steps, str: pins_config_to_str(pins_config) + roundHourDistance(steps)});
+					scramble.push ({pins_config: pins_config, steps:steps, str: pins_config_to_str(pins_config) + Math.abs(steps) + (steps < 0 ?"-":"+") });
 
 					if (cnt==Math.trunc(scramble_to_execute/2)) {
 						this.clock_view.flipY2();
