@@ -479,7 +479,7 @@
 			return key;
 		}
 
-		class WcaScramble {
+		class MyScramble {
 		
 			constructor(clock,clock_view) {
 				this.clock=clock;

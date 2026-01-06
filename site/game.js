@@ -48,7 +48,7 @@ class ClockGame {
     }
 
     scramble() {
-      this.last_scramble=new WcaScramble(this.clock,this.clock_view).execute(this.scramble_to_execute);
+      this.last_scramble=new MyScramble(this.clock,this.clock_view).execute(this.scramble_to_execute);
     }
 
     start() {
