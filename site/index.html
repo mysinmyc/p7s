@@ -12,18 +12,18 @@
 		var clock_game;
 
 		const default_settings = {
-			version: 2,
-			show_buttons: false,			
+			config_version: 3,
+			show_button_panel: true,			
 			show_editor: false,
 		}
 
-		var settings = default_settings;
+		var _globals  = { settings: default_settings };
 
 		function update_clock_data(uiToDomain) {
 			for (var cnt=0;cnt<18;cnt++) {	
 				inputValue=document.getElementById("innerClockValue"+cnt); 
 				if (uiToDomain) {
-					clock_game.state.inner_clocks[cnt].value=parseInt(inputValue.value);
+					clock_game.state.clock.inner_clocks[cnt].value=parseInt(inputValue.value);
 				} else {
 					inputValue.value=clock_game.state.clock.inner_clocks[cnt].value;
 				}
@@ -33,10 +33,16 @@
 		
 		function update_settings(uiToDomain) {
 			chkEdit = document.getElementById("chkEdit");
+			chkButtonPanel = document.getElementById("chkButtonPanel");
+			chkDebug = document.getElementById("chkDebug");
 			if (uiToDomain) {
-				settings.show_editor = chkEdit.checked;
+				_globals.settings.show_editor = chkEdit.checked;
+				clock_game.debug = chkDebug.checked;
+				_globals.settings.show_button_panel = chkButtonPanel.checked;
 			} else {
-				chkEdit.checked = settings.show_editor;
+				chkEdit.checked = _globals.settings.show_editor;
+				chkDebug.checked = clock_game.debug;
+				chkButtonPanel.checked = _globals.settings.show_button_panel;
 			}
 		}
 
@@ -44,22 +50,15 @@
 			var solution = document.getElementById("solution");
 			solution7SimulBpaul=compute7SimulBPaul(c);
 			solution.innerHTML =  "7 simul flip (Bpaul): "+array2Letters(solution7SimulBpaul)+" ("+solution7SimulBpaul+")";
-			
 		}
 
 		function refreshComponents() {
 			clockInputs= document.getElementById("clockInputs");
-			clockInputs.style.display = settings.show_editor ? "block" : "none";
+			clockInputs.style.display = _globals.settings.show_editor ? "block" : "none";
+			button_panel = document.getElementById("button_panel");
+			button_panel.style.display = _globals.settings.show_button_panel ? "block" : "none";
 			clock_game.execute((c,v)=> {
 			},true);			
-		}
-
-
-		function reset() {
-			clock_game.reset();
-			settings = default_settings;
-			save_settings();			
-			update_settings(false);	
 		}
 
 		function write_last_scramble() {
@@ -72,13 +71,13 @@
 		}
 
 		function save_settings() {
-			localStorage.setItem("settings", JSON.stringify(settings));
+			localStorage.setItem("settings", JSON.stringify(_globals.settings));
 		}
 
 		function load_settings() {
-			settings = JSON.parse(localStorage.getItem("settings") ?? JSON.stringify(default_settings));
-			if (settings.version == undefined || settings.version != default_settings.version) {
-				settings = default_settings;
+			_globals.settings = JSON.parse(localStorage.getItem("settings") ?? JSON.stringify(default_settings));
+			if (_globals.settings.config_version == undefined || _globals.settings.config_version < default_settings.version) {
+				_globals.settings = default_settings;
 				save_settings();
 			}
 			update_settings(false);
@@ -103,7 +102,6 @@
 			update_settings(true);
 			save_settings();
 			refreshComponents();
-			clock_game.execute(()=>{});
 		}
 
 		function flipX2() {
@@ -172,6 +170,9 @@
 			["welcome"].forEach( e=> document.getElementById(e).style.display="none");
 			["appArea"].forEach( e=> document.getElementById(e).style.display="block");
 
+			clock_game.new_game();			
+			write_solution(clock_game.state.clock);			
+
 			if(window.innerHeight < window.innerWidth){
 				window.scrollTo(0,250);			
 			}
@@ -197,8 +198,6 @@
 			clock_game.addChangeListener((game_state)=> {
 				write_solution(game_state.clock);
 			});			
-			clock_game.new_game();			
-			write_solution(clock_game.state.clock);			
 			setTimeout(show_game, 2000);
 		}
 
@@ -237,7 +236,7 @@
 				<input type="button" onClick="show_help();" value="Aiuto"/>			
 			</div>
 
-			<div class="buttonBar" style="position: fixed; right:20px;bottom:20px">
+			<div class="buttonBar" style="position: fixed; right:20px;bottom:20px" id="button_panel">
 				<table>
 					<tr>
 						<td>
@@ -287,12 +286,16 @@
 				</table>			
 			</div>
 						
-			<div class="settings panel" id="settings">
-				<input type="checkbox" id="chkEdit" onClick="set_settings();"/>Show Editor
+			<div class="settings panel" id="settings" style="position: fixed; top: 120px;right: 20px">
+				<input type="checkbox" id="chkEdit" onClick="set_settings();"/>Editor
+				&nbsp;
+				<input type="checkbox" id="chkButtonPanel" onClick="set_settings();"/>Mostra barra pulsanti
+				&nbsp;
+				<input type="checkbox" id="chkDebug" onClick="set_settings();"/>Debug
 				<br/>
 				<span id="scramble"></span>			
 				<br/>
-				<input type="button" onClick="show_solution();" value="Solution"/>
+				<input type="button" onClick="show_solution();" value="Soluzione"/>
 			</div>
 
 			<div id="divSolution" class="solution" style="display: none;">
@@ -300,6 +303,14 @@
 				<br/>
 				<input type="button" class="white" onClick="test_solution();" value="Test"/>	
 			</div>
+
+
+
+			<div class="clocks">
+				<canvas id="myCanvasA"></canvas>
+			</div>
+
+
 
 			<div class="clockInputs" id="clockInputs">
 				<table style="background-color: #a3a3a3; padding: 10px;">
@@ -339,10 +350,6 @@
 				</table>				
 
 			</div>	
-
-			<div class="clocks">
-				<canvas id="myCanvasA"></canvas>
-			</div>
 		</center>
 	
 	</span>

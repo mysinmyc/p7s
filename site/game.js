@@ -12,7 +12,7 @@ class GameState {
         this.last_scramble=[];
         this.scramble_to_execute=12;
 
-        this._change_counter+=1;
+        this._change_counter=0;
     }
 
     scramble() {
@@ -155,6 +155,7 @@ class SolveStage extends GameStage {
     setup(drawing_context,game_state)  {
         this.layoutter = new Layoutter(drawing_context);
         this.clock_drawer = new ClockDrawer(game_state.clock_view, drawing_context,this.layoutter);
+        this.clock_drawer.show_values = this.game.debug;
         this._setup_clickable();        
     }
 
@@ -178,38 +179,38 @@ class SolveStage extends GameStage {
                 (game_state,x,y)=>{ game_state.clock_view.current_pins[3].invert()}
             ),
             //gear UL
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin,this.layoutter.margin,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_UL(1)}
             ),         
             //gear UR
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin*2+ this.layoutter.outer_clock_size / 3*2 ,this.layoutter.margin,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_UR(1)}
             ),                           
             //gear DL
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin,this.layoutter.margin*2+this.layoutter.outer_clock_size / 3*2 ,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_DL(1)}
             ),         
             //gear DR
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin*2+this.layoutter.outer_clock_size / 3*2 ,this.layoutter.margin*2+this.layoutter.outer_clock_size / 3*2 ,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_DR(1)}
             ),  
             //gear U - flipX2               
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin*2+this.layoutter.outer_clock_size/3 ,this.layoutter.margin,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*3,this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),  
 
             //gear D - flipX2               
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin*2+this.layoutter.outer_clock_size/3 ,this.layoutter.margin*2+this.layoutter.outer_clock_size / 3*2,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*3,this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),  
 
             //gear L - flipY2               
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin,this.layoutter.margin*2+this.layoutter.outer_clock_size/3,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_size / 6*3,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipY2()}
             ),  
 
             //gear R - flipX2               
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left+this.layoutter.margin*2+this.layoutter.outer_clock_size/3*2,this.layoutter.margin*2+this.layoutter.outer_clock_size/3,this.layoutter.inner_clock_size,this.layoutter.inner_clock_size ),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_size / 6*3,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipY2()}
             ),  
 
@@ -346,7 +347,7 @@ class ClockGame {
         
         this.processing=false;
         this._last_stage = -1;
-        this._last_change_committed =0;
+        this._last_change_committed =-1;
 
         let stats_manager = new StatsManager();
         stats_manager.init();
@@ -355,6 +356,7 @@ class ClockGame {
         this.init_stages();
 
         setInterval(()=>this._loop(),197);
+        this.debug=false;
     }
 
     _loop() {
@@ -362,11 +364,11 @@ class ClockGame {
             this.processing = true;
             let current_change = this.state.change_counter;
             try {
-                if(current_change!=this._last_change_committed) {
+                if(current_change>this._last_change_committed) {
                     this.change_listeners.forEach( l => l(this.state));
                 }
                 this.current_stage.time_handler(this.state);                
-                this.draw(this._change_counter != this._last_change_committed);                
+                this.draw(current_change > this._last_change_committed);                
                 this.current_stage.update(this.state);                
             } finally {
                 this._last_change_committed = current_change;
@@ -397,14 +399,36 @@ class ClockGame {
     }
 
     draw(changed) {
-        if (changed) {
+        if (changed || this.debug) {
             this.drawing_context.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
         }
 		this.drawing_context.resetTransform();       
         this.drawing_context.translate(0,0) ;
 
-        this.current_stage.draw(this.drawing_context,this.state,changed);
-  
+        this.current_stage.draw(this.drawing_context,this.state,changed||this.debug);
+        
+        if (this.debug) {
+            this.drawing_context.resetTransform();       
+            this.drawing_context.translate(0,0) ;
+            
+            this.current_stage.clickacle_elements.forEach( (e)=> {
+                this.drawing_context.strokeStyle=this._debug_muose != undefined && e.is_inside(this._debug_muose.x,this._debug_muose.y) ? "lightblue" :"red";
+                e.area.draw(this.drawing_context)
+            });
+            if (this._debug_muose != undefined) {
+                this.drawing_context.beginPath();
+                this.drawing_context.moveTo(0,0);
+                this.drawing_context.strokeStyle="lightblue";
+                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.moveTo(0,this.drawing_context.canvas.height);
+                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.moveTo(this.drawing_context.canvas.width,this.drawing_context.canvas.height);
+                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.moveTo(this.drawing_context.canvas.width,0);
+                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.stroke();
+            }
+        }
     }
 
     reset() {
@@ -420,8 +444,8 @@ class ClockGame {
     }
 
     execute(f,force=false) {      
-        this.state.change();              
         f(this.state);
+        this.state.change();              
     }
     
     addChangeListener(f) {
@@ -452,6 +476,9 @@ class ClockGame {
             this.canvas.style.cursor = "pointer";
         } else {
             this.canvas.style.cursor = "default";
+        }
+        if (this.debug) {
+            this._debug_muose = {x: e.offsetX, y: e.offsetY};
         }
         e.preventDefault();
         

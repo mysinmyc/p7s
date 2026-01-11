@@ -6,12 +6,20 @@
 			constructor(x,y,width,height) {
 				this.startX=x;
 				this.startY=y;
+				this.width=width;
+				this.height=height;
 				this.endX=x+width;
 				this.endY=y+height;
 			}
 
 			is_inside(x,y) {
 				return x>= this.startX && x<= this.endX && y >= this.startY && y <= this.endY;
+			}
+
+			draw(drawing_context) {
+				drawing_context.beginPath();
+				drawing_context.rect(this.startX,this.startY,this.width,this.height);
+				drawing_context.stroke();
 			}
 		}
 
@@ -28,7 +36,16 @@
 				if (distanzaX>this.radious || distanzaY > this.radious) {
 					return false;
 				}
-				return (distanzaX^2) + (distanzaY^2)<= (this.radious^2);
+				return (distanzaX*distanzaX +  distanzaY^distanzaY)<= (this.radious*this.radious);
+			}
+
+			draw(drawing_context) {
+				drawing_context.beginPath();
+				drawing_context.arc(this.centerX,this.centerY,10,0,Math.PI*2);
+				drawing_context.stroke();
+				drawing_context.beginPath();
+				drawing_context.arc(this.centerX,this.centerY,this.radious,0,Math.PI*2);
+				drawing_context.stroke();
 			}
 		}
 
@@ -102,7 +119,7 @@
 						this.drawing_context.fontStyle="bold";
 						this.drawing_context.fillStyle="#faebc1";
 						this.drawing_context.beginPath();
-						this.drawing_context.fillText(pins[cnt].id, this.layoutter.inner_clock_margin+(this.layoutter.outer_clock_size / 3)*(cnt%2+1)-10, layoutter.inner_clock_margin+this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1)+10, 20);					
+						this.drawing_context.fillText(pins[cnt].id, this.layoutter.outer_clock_left + this.layoutter.outer_clock_size / 3*(cnt%2+1)-10, this.layoutter.inner_clock_margin+this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1)+10, 20);					
 					}
 				}
 			}	
@@ -247,6 +264,12 @@
 		class FullArea {
 			is_inside(x,y) {
 				return true;
+			}
+
+			draw(drawing_context) {
+				drawing_context.beginPath();
+				drawing_context.rect(0,0,drawing_context.canvas.width,drawing_context.canvas.height);
+				drawing_context.stroke();
 			}
 		}
 		
