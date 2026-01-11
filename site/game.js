@@ -124,7 +124,7 @@ class InspectionStage extends GameStage {
 
             //Stackmat
             new ClickableArea(new Rect((this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin,  
+					this.layoutter.outer_clock_size,  
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height),
                 (game_state,x,y)=>{ game_state.next_stage()}
@@ -216,7 +216,7 @@ class SolveStage extends GameStage {
 
             //Stackmat
             new ClickableArea(new Rect((this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin,  
+					this.layoutter.stackmat_top,
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height),
                 (game_state,x,y)=>{ game_state.to_stage("lose")}
@@ -267,7 +267,7 @@ class WonStage extends GameStage {
 
             //Stackmat
             new ClickableArea(new Rect((this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin,  
+					this.layoutter.stackmat_top,
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height),
                 (game_state,x,y)=>{  this.game.new_game()}
@@ -319,7 +319,7 @@ class LoseStage extends GameStage {
 
             //Stackmat
             new ClickableArea(new Rect((this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin,  
+					this.layoutter.stackmat_top, 
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height),
                 (game_state,x,y)=>{ this.game.new_game()}
@@ -342,7 +342,7 @@ class ClockGame {
         this.game_listeners = [];
         this.change_listeners = [];
 
-        this.canvas.addEventListener("mousemove", (e) => this._on_mouse_move(e));
+        //this.canvas.addEventListener("mousemove", (e) => this._on_mouse_move(e));
         this.canvas.addEventListener("click", (e) => this._on_click(e));
         
         this.processing=false;
@@ -355,7 +355,7 @@ class ClockGame {
         this.state = new GameState();
         this.init_stages();
 
-        setInterval(()=>this._loop(),197);
+        setInterval(()=>this._loop(),211);
         this.debug=false;
     }
 
@@ -412,20 +412,20 @@ class ClockGame {
             this.drawing_context.translate(0,0) ;
             
             this.current_stage.clickacle_elements.forEach( (e)=> {
-                this.drawing_context.strokeStyle=this._debug_muose != undefined && e.is_inside(this._debug_muose.x,this._debug_muose.y) ? "lightblue" :"red";
+                this.drawing_context.strokeStyle=this._debug_mouse != undefined && e.is_inside(this._debug_mouse.x,this._debug_mouse.y) ? "lightblue" :"red";
                 e.area.draw(this.drawing_context)
             });
-            if (this._debug_muose != undefined) {
+            if (this._debug_mouse != undefined) {
                 this.drawing_context.beginPath();
                 this.drawing_context.moveTo(0,0);
                 this.drawing_context.strokeStyle="lightblue";
-                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.lineTo(this._debug_mouse.x,this._debug_mouse.y);
                 this.drawing_context.moveTo(0,this.drawing_context.canvas.height);
-                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.lineTo(this._debug_mouse.x,this._debug_mouse.y);
                 this.drawing_context.moveTo(this.drawing_context.canvas.width,this.drawing_context.canvas.height);
-                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.lineTo(this._debug_mouse.x,this._debug_mouse.y);
                 this.drawing_context.moveTo(this.drawing_context.canvas.width,0);
-                this.drawing_context.lineTo(this._debug_muose.x,this._debug_muose.y);
+                this.drawing_context.lineTo(this._debug_mouse.x,this._debug_mouse.y);
                 this.drawing_context.stroke();
             }
         }
@@ -478,7 +478,7 @@ class ClockGame {
             this.canvas.style.cursor = "default";
         }
         if (this.debug) {
-            this._debug_muose = {x: e.offsetX, y: e.offsetY};
+            this._debug_mouse = {x: e.offsetX, y: e.offsetY};
         }       
     }
 

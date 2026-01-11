@@ -59,15 +59,13 @@
 			calculate() {
 				this.width=this.drawing_context.canvas.clientWidth;
 				this.height= this.drawing_context.canvas.clientHeight;
-				this.margin=50;
+				this.outer_clock_size = (this.width > this.height ? this.height: this.width)-100;
 
-				this.outer_clock_size = (this.width > this.height ? this.height -this.margin : this.width)-100;
-
-
-				this.stackmat_width=Math.round(this.outer_clock_size * 0.75);
+				this.stackmat_width=Math.round( this.width > this.height ? this.outer_clock_size * 1.2 : this.width * 0.9);
 				this.stackmat_height=Math.round(this.stackmat_width / 5);
-				this.outer_clock_size-=this.stackmat_height;
+				this.outer_clock_size = this.outer_clock_size-this.stackmat_height-40;
 				this.outer_clock_left=(this.width-this.outer_clock_size)/2;
+				this.stackmat_top=this.outer_clock_size+ 40;
 
 				this.inner_clock_margin=20;
 				this.inner_clock_size = this.outer_clock_size  /3 - this.inner_clock_margin *2;
@@ -214,14 +212,14 @@
 				this.drawing_context.beginPath();
 				this.drawing_context.fillStyle = "black";
 				this.drawing_context.fillRect( (this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin,  
+					this.layoutter.outer_clock_size ,  
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height);
 
 				this.drawing_context.beginPath();
 				this.drawing_context.fillStyle = "gray";
 				this.drawing_context.fillRect( (this.layoutter.width - this.layoutter.stackmat_width)/2+this.layoutter.stackmat_width/5*2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin+10,  
+					this.layoutter.outer_clock_size +10,  
 					this.layoutter.stackmat_width/5,
 					this.layoutter.stackmat_height-20);
 				*/
@@ -229,7 +227,7 @@
 				let img_stackmat = document.getElementById("asset_stackmat");
 				this.drawing_context.drawImage( img_stackmat,
 					(this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin,  
+					this.layoutter.stackmat_top,  
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height);
 
@@ -245,14 +243,14 @@
 				this.drawing_context.fillStyle ="white";					
 
 				this.drawing_context.fillText(description, (this.layoutter.width - this.layoutter.stackmat_width)/2+this.layoutter.stackmat_width*0.36, 
-					this.layoutter.outer_clock_size + this.layoutter.margin+ this.layoutter.stackmat_height *0.35,  
+					this.layoutter.stackmat_top + this.layoutter.stackmat_height *0.35,  
 					this.layoutter.stackmat_width/5,
 					);
 
 				this.drawing_context.font="30px Arial";					
 				this.drawing_context.fillStyle =  "white";
 				this.drawing_context.fillText(str_value, (this.layoutter.width - this.layoutter.stackmat_width)/2+this.layoutter.stackmat_width/2, 
-					this.layoutter.outer_clock_size + this.layoutter.margin+ this.layoutter.stackmat_height * 0.73,  
+					this.layoutter.stackmat_top + this.layoutter.stackmat_height * 0.73,  
 					this.layoutter.stackmat_width/5,
 					);
 
