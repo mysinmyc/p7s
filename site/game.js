@@ -343,7 +343,7 @@ class ClockGame {
         this.change_listeners = [];
 
         this.canvas.addEventListener("mousemove", (e) => this._on_mouse_move(e));
-        this.canvas.addEventListener("click", (e) => this._on_mouse_up(e));
+        this.canvas.addEventListener("click", (e) => this._on_click(e));
         
         this.processing=false;
         this._last_stage = -1;
@@ -479,12 +479,11 @@ class ClockGame {
         }
         if (this.debug) {
             this._debug_muose = {x: e.offsetX, y: e.offsetY};
-        }
-        e.preventDefault();
-        
+        }       
     }
 
-    _on_mouse_up(e) {
+
+    _on_click(e) {
         this.state.change();
         let clickacle_elements=this.current_stage.clickacle_elements;
         if (clickacle_elements != undefined) {
@@ -501,6 +500,7 @@ class ClockGame {
             });
         }
         e.preventDefault();
+        return false;
     }
 
 
