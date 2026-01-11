@@ -1,129 +1,9 @@
 <html>
 <head>
-	<style>
-		body {
-  			background-image: url('background.jpeg');
-  			background-repeat: no-repeat;
-  			background-attachment: fixed;
-  			background-size: 100% 100%;
-			margin: 40px;
-		}
-
-		input[type=button] {
-			background-color: #925892;
-			border: none;
-			color: white;
-			padding: 15px 32px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 16px;
-			margin: 4px 2px;
-			cursor: pointer;
-		}
-
-		input[type=button].red  {
-			background-color: darkred;
-			border: none;
-			color: white;
-		}
-
-
-		input[type=button].green  {
-			background-color: darkgreen;
-			border: none;
-			color: white;
-		}		
-
-		input[type=button].white  {
-			background-color: white;
-			border: none;
-			color: #925892;
-		}		
-
-		input.inputClock {
-			width: 100%; 
-			height: 100%; 
-			text-align: center; 
-			border-radius: 5px; 
-			border: 1px solid #999; 
-			font-size: 1.1rem; 
-		}
-
-		input[type=checkbox] {width:30px; height:30px;}
-
-
-		.buttonBar {
-			border-radius: 25px;
-			padding: 20px;
-			background-color: #fff3c1;
-			vertical-align: middle;
-		}
-
-		.solution {
-			border-radius: 25px;
-			padding: 20px;
-			background-color: green;
-			font-size:  40;
-			color: white;
-			margin-top: 20px;			
-			margin-bottom: 20px;			
-			width: fit-content;
-		}
-
-		.win {
-			border-radius: 25px;
-			padding: 20px;
-			background-color: green;
-			font-size:  40;
-			color: white;
-			margin-top: 20px;			
-			margin-bottom: 20px;			
-			width: fit-content;
-		}
-
-		.clockInputs {
-			border-radius: 25px;
-			padding: 20px;
-			background-color: #fff3c1;
-			display: flex; 
-			gap: 20px;
-			width: fit-content;
-			margin-top: 20px;			
-			margin-bottom: 20px;			
-			display: none;
-		}
-
-		.settings {
-			border-radius: 25px;
-			padding: 20px;
-			background-color: #fff3c1;
-			vertical-align: middle;
-			width: fit-content;
-			display: none;
-			margin-top: 20px;			
-			margin-bottom: 20px;			
-		}
-
-		.title {
-			border-radius: 25px;
-			padding: 5px;
-			background-color: #fff3c1;
-			width: fit-content;		
-			position: fixed;
-    		top: 20px;
-    		left: 20px;			
-		}
-
-		.clocks {
-			margin-top: 20px;			
-			margin-bottom: 20px;			
-		 	display: flex; 
-			width: fit-content;
-		}
-
-	</style>
+	<link rel="stylesheet" href="style.css" />
+	<script src="util.js"></script>
 	<script src="model.js"></script>
+	<script src="stats.js"></script>
 	<script src="solution.js"></script>
 	<script src="graphics.js"></script>
 	<script src="game.js"></script>
@@ -132,9 +12,9 @@
 		var clock_game;
 
 		const default_settings = {
-			show_values: false,
+			version: 2,
+			show_buttons: false,			
 			show_editor: false,
-			scramble: 12
 		}
 
 		var settings = default_settings;
@@ -143,43 +23,34 @@
 			for (var cnt=0;cnt<18;cnt++) {	
 				inputValue=document.getElementById("innerClockValue"+cnt); 
 				if (uiToDomain) {
-					clock_game.clock.inner_clocks[cnt].value=parseInt(inputValue.value);
+					clock_game.state.inner_clocks[cnt].value=parseInt(inputValue.value);
 				} else {
-					inputValue.value=clock_game.clock.inner_clocks[cnt].value;
+					inputValue.value=clock_game.state.clock.inner_clocks[cnt].value;
 				}
 			
 			}	
 		}
 		
 		function update_settings(uiToDomain) {
-			chkShowValues = document.getElementById("chkShowValues");
 			chkEdit = document.getElementById("chkEdit");
-			inputScramble = document.getElementById("inputScramble");
 			if (uiToDomain) {
-				settings.show_values = chkShowValues.checked;
 				settings.show_editor = chkEdit.checked;
-				settings.scramble = parseInt(inputScramble.value);				
 			} else {
-				chkShowValues.checked = settings.show_values;
 				chkEdit.checked = settings.show_editor;
-				inputScramble.value = settings.scramble;
 			}
 		}
 
 		function write_solution(c) {
 			var solution = document.getElementById("solution");
 			solution7SimulBpaul=compute7SimulBPaul(c);
-			solution.innerHTML =  "7 simul flip (Bpaul): "+array2Letters(solution7SimulBpaul)+" ("+solution7SimulBpaul+")" + 
-			" test: "+ (test7SimulBPaul(c) ? "OK" :"KO");
+			solution.innerHTML =  "7 simul flip (Bpaul): "+array2Letters(solution7SimulBpaul)+" ("+solution7SimulBpaul+")";
 			
 		}
 
 		function refreshComponents() {
 			clockInputs= document.getElementById("clockInputs");
 			clockInputs.style.display = settings.show_editor ? "block" : "none";
-			clock_game.scramble_to_execute=settings.scramble;			
 			clock_game.execute((c,v)=> {
-				clock_game.clock_drawer.show_values = settings.show_values;
 			},true);			
 		}
 
@@ -192,29 +63,13 @@
 		}
 
 		function write_last_scramble() {
-			var scramble_str="Last scramble: ";
-			clock_game.last_scramble.forEach ( (s) => scramble_str+= s.str + " ");
-			document.getElementById("scramble").innerHTML = scramble_str;
+			document.getElementById("scramble").innerHTML = "Last scramble: "+format_scramble(clock_game.state.last_scramble);
 		}
 
 		function new_game() {
 			clock_game.new_game();
 			write_last_scramble();
 		}
-		
-		function save_clock_state(c) {
-			localStorage.setItem("clock", JSON.stringify(c.serialize()));
-		}
-
-				
-		function load_clock_state(c) {
-			saved_clock=localStorage.getItem("clock");
-			if (saved_clock!= undefined) {
-					c.deserialize(JSON.parse(saved_clock));
-			}
-			update_clock_data(false);
-		}
-
 
 		function save_settings() {
 			localStorage.setItem("settings", JSON.stringify(settings));
@@ -222,6 +77,10 @@
 
 		function load_settings() {
 			settings = JSON.parse(localStorage.getItem("settings") ?? JSON.stringify(default_settings));
+			if (settings.version == undefined || settings.version != default_settings.version) {
+				settings = default_settings;
+				save_settings();
+			}
 			update_settings(false);
 			refreshComponents();
 		}
@@ -231,6 +90,15 @@
 		}
 
 
+		function show_stats() {
+			location="stats.html";
+		}
+
+
+		function show_help() {
+			location="help.html";
+		}
+
 		function set_settings() {
 			update_settings(true);
 			save_settings();
@@ -239,47 +107,47 @@
 		}
 
 		function flipX2() {
-			clock_game.execute((c,v)=>v.flipX2());
+			clock_game.execute((game_state)=>game_state.clock_view.flipX2());
 		}
 
 		function flipY2() {
-			clock_game.execute((c,v)=>v.flipY2());
+			clock_game.execute((game_state)=>game_state.clock_view.flipY2());
 		}
 
 		function rotate180() {
-			clock_game.execute((c,v)=>v.rotate180());
+			clock_game.execute((game_state)=>game_state.clock_view.rotate180());
 		}
 
 		function rotate_gear_UR_plus() {
-			clock_game.execute((c,v)=>v.rotate_gear_UR(1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_UR(1));
 		}
 
 		function rotate_gear_UL_plus() {
-			clock_game.execute((c,v)=>v.rotate_gear_UL(1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_UL(1));
 		}
 
 		function rotate_gear_UR_minus() {
-			clock_game.execute((c,v)=>v.rotate_gear_UR(-1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_UR(-1));
 		}
 
 		function rotate_gear_UL_minus() {
-			clock_game.execute((c,v)=>v.rotate_gear_UL(-1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_UL(-1));
 		}
 
 		function rotate_gear_DR_plus() {
-			clock_game.execute((c,v)=>v.rotate_gear_DR(1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_DR(1));
 		}
 
 		function rotate_gear_DL_plus() {
-			clock_game.execute((c,v)=>v.rotate_gear_DL(1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_DL(1));
 		}
 
 		function rotate_gear_DR_minus() {
-			clock_game.execute((c,v)=>v.rotate_gear_DR(-1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_DR(-1));
 		}
 
 		function rotate_gear_DL_minus() {
-			clock_game.execute((c,v)=>v.rotate_gear_DL(-1));
+			clock_game.execute((game_state)=>game_state.clock_view.rotate_gear_DL(-1));
 		}
 
 
@@ -289,8 +157,9 @@
 		}
 
 		function test_solution() {
-			clock_game.execute((c,v) => {
-				exec7SimulBPaul(c);
+			clock_game.execute((game_state) => {
+				//game_state.to_stage("lose");
+				exec7SimulBPaul(game_state.clock);
 			});
 		}
 		
@@ -302,26 +171,34 @@
 		function show_game() {
 			["welcome"].forEach( e=> document.getElementById(e).style.display="none");
 			["appArea"].forEach( e=> document.getElementById(e).style.display="block");
-			clock_game.start();
+
+			if(window.innerHeight < window.innerWidth){
+				window.scrollTo(0,250);			
+			}
 		}
 
+		function resizeCanvas(){
+			myCanvasA = document.getElementById("myCanvasA");
+    		myCanvasA.width = window.innerWidth;
+    		myCanvasA.height = window.innerHeight;
+			if (clock_game != undefined) {
+				clock_game.resize();
+			}
+		}
+		
 		function init() {
 			myCanvasA = document.getElementById("myCanvasA");
+			resizeCanvas();         
+			window.addEventListener('resize', resizeCanvas, false);
+
 			clock_game = new ClockGame(myCanvasA);
-			load_settings();			
-			clock_game.execute((c,v)=> load_clock_state(c),true);
-			clock_game.addChangeListener((c,v)=>update_clock_data(false));
-			clock_game.addChangeListener((c,v)=>save_clock_state(c));
-			clock_game.addChangeListener((c,v)=> {
-				document.getElementById("win").style.display = c.is_solved ? "block" : "none";
-			});
-			clock_game.addChangeListener((c,v)=> {
-				write_solution(c);
+			load_settings();	
+			clock_game.addChangeListener((game_state)=>update_clock_data(false));
+			clock_game.addChangeListener((game_state)=> {
+				write_solution(game_state.clock);
 			});			
-			clock_game.addGameListener((n,o)=> {
-				document.getElementById("win").style.display = n == GameStatus.Won;
-			});			
-			write_solution(clock_game.clock);			
+			clock_game.new_game();			
+			write_solution(clock_game.state.clock);			
 			setTimeout(show_game, 2000);
 		}
 
@@ -331,6 +208,15 @@
 </head>
 
 <body onLoad="init()">
+
+	<div style="display: none;">
+		<img id="asset_title" src="title.png"/>
+		<img id="asset_coppa_oro" src="coppa_oro.png"/>
+		<img id="asset_coppa_grigia" src="coppa_grigia.png"/>
+		<img id="asset_medaglia" src="medaglia.png"/>
+		<img id="asset_stackmat" src="stackmat.png"/>
+	</div>
+
 	<span id="welcome">
 		<table style="width: 100%" height="100%">
 			<tr>
@@ -343,16 +229,12 @@
 	<span id="appArea" style="display: none; margin-top: 300;margin-bottom: 300;">
 
 		<center>
-
-			<div class="title">
-				<img src="title.png" width="400px"/>
-			</div>
-
 			
 			<div class="buttonBar" style="position: fixed;top: 20px;right: 20px;">
-				<input type="button" onClick="new_game();" value="New game"/>				
-				<input type="button" onClick="show_settings();" value="Settings"/>
-				<input type="button" onClick="show_solution();" value="Solution"/>			
+				<input type="button" onClick="new_game();" value="Nuova partita"/>				
+				<input type="button" onClick="show_settings();" value="Impostazioni"/>
+				<input type="button" onClick="show_stats();" value="Statistiche"/>			
+				<input type="button" onClick="show_help();" value="Aiuto"/>			
 			</div>
 
 			<div class="buttonBar" style="position: fixed; right:20px;bottom:20px">
@@ -405,21 +287,12 @@
 				</table>			
 			</div>
 						
-			<div class="settings" id="settings">
-				Scramble <input type="number" id="inputScramble" onChange="set_settings();"/></td>
-				<br/>
+			<div class="settings panel" id="settings">
 				<input type="checkbox" id="chkEdit" onClick="set_settings();"/>Show Editor
-				<input type="checkbox" id="chkShowValues" onClick="set_settings();"/>Values
-				<br/>
-				<input type="button" onClick="reset();" value="Reset"/>	
 				<br/>
 				<span id="scramble"></span>			
-			</div>
-
-			<div id="win" class="win" style="display: none;">
-				<h1>You win!!!</h1>
 				<br/>
-				<input type="button" class="red" onclick="new_game();" value="New game"/>	
+				<input type="button" onClick="show_solution();" value="Solution"/>
 			</div>
 
 			<div id="divSolution" class="solution" style="display: none;">
@@ -468,10 +341,12 @@
 			</div>	
 
 			<div class="clocks">
-				<canvas class="clockA" id="myCanvasA" width="600" height="600"></canvas>
+				<canvas id="myCanvasA"></canvas>
 			</div>
 		</center>
 	
 	</span>
+
+	
 </body>
 </html>

@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
+        <script>
+
+            function back() {
+                location="index.html";
+            }
+ 
+        </script>
+    </head>
+    <body onLoad="init()">
+
+        <div class="title">
+            <img src="title.png" width="400px"/>
+        </div>
+
+			
+        <div class="buttonBar" style="position: fixed;top: 20px;right: 20px;">
+            <input type="button" onClick="back();" value="Indietro"/>				
+        </div>        
+        
+        <div class="panel" style="margin-top: 60px">
+            <div class="panel_title">Descizione</div>
+            P7S &egrave; un gioco che simula il puzzle Rubik's Clock;
+            <p>
+            Il suo scopo principale &egrave; l'esercizio del metodo di memorizzazione 7simul (bpal)
+            </p>
+        </div>
+
+        <div class="panel" style="margin-top: 60px">
+            <div class="panel_title">Come si gioca</div>
+            <p>Per avviare il gioco cliccare sullo Stackmat</p>
+            <p>Nella prima fase, l'ispenzione, il clock &egrave; viene reso disponibile per l'analisi. Di solito in questa fase avviene la memorizzazione.</p>
+            <p>Per passare alla risoluzione cliccare sullo Stackmat, cliccare invece sul clock per ruotarlo</p>
+            <p>Nella fase di solve bisogna portare tutti gli orologini a mezzogiorno su entrambi i lati del clock</p>
+        </div>
+
+        <div class="panel" style="margin-top: 60px">
+            <div class="panel_title">Comandi Solve</div>
+            <img src="comandi.png"/>
+        </div>        
+    </body>
+</html>
