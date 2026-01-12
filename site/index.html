@@ -12,8 +12,8 @@
 		var clock_game;
 
 		const default_settings = {
-			config_version: 3,
-			show_button_panel: true,			
+			config_version: 4,
+			show_button_panel: false,			
 			show_editor: false,
 		}
 
@@ -76,7 +76,7 @@
 
 		function load_settings() {
 			_globals.settings = JSON.parse(localStorage.getItem("settings") ?? JSON.stringify(default_settings));
-			if (_globals.settings.config_version == undefined || _globals.settings.config_version < default_settings.version) {
+			if (_globals.settings.config_version == undefined || _globals.settings.config_version < default_settings.config_version) {
 				_globals.settings = default_settings;
 				save_settings();
 			}
@@ -156,7 +156,7 @@
 
 		function test_solution() {
 			clock_game.execute((game_state) => {
-				//game_state.to_stage("lose");
+				game_state.to_stage("lose");
 				exec7SimulBPaul(game_state.clock);
 			});
 		}
@@ -173,9 +173,6 @@
 			clock_game.new_game();			
 			write_solution(clock_game.state.clock);			
 
-			if(window.innerHeight < window.innerWidth){
-				window.scrollTo(0,250);			
-			}
 		}
 
 		function resizeCanvas(){
@@ -225,18 +222,19 @@
 			</tr>
 		</table>
 	</span>
-	<span id="appArea" style="display: none; margin-top: 300;margin-bottom: 300;">
+	<span id="appArea" style="display: none">
 
 
 			
 			<div class="buttonBar" style="position: fixed;top: 20px;right: 20px;">
 				<input type="button" onClick="new_game();" value="Nuova partita"/>				
 				<input type="button" onClick="show_settings();" value="Impostazioni"/>
-				<input type="button" onClick="show_stats();" value="Statistiche"/>			
+				<input type="button" onClick="show_stats();" value="Statistiche"/>	
+				<input type="button" onClick="show_solution();" value="Soluzione"/>						
 				<input type="button" onClick="show_help();" value="Aiuto"/>			
 			</div>
 
-			<div class="buttonBar" style="position: fixed; right:20px;bottom:20px" id="button_panel">
+			<div class="buttonBar" style="position: fixed; right:20px;bottom:20px;r" id="button_panel">
 				<table>
 					<tr>
 						<td>
@@ -286,7 +284,7 @@
 				</table>			
 			</div>
 						
-			<div class="settings panel" id="settings" style="position: fixed; top: 120px;right: 20px">
+			<div class="settings_panel panel" id="settings">
 				<input type="checkbox" id="chkEdit" onClick="set_settings();"/>Editor
 				&nbsp;
 				<input type="checkbox" id="chkButtonPanel" onClick="set_settings();"/>Mostra barra pulsanti
@@ -294,62 +292,61 @@
 				<input type="checkbox" id="chkDebug" onClick="set_settings();"/>Debug
 				<br/>
 				<span id="scramble"></span>			
-				<br/>
-				<input type="button" onClick="show_solution();" value="Soluzione"/>
 			</div>
 
-			<div id="divSolution" class="solution" style="display: none;">
+			<div id="divSolution" class="solution_panel" style="display: none;">
 				<span id="solution"></span>
 				<br/>
-				<input type="button" class="white" onClick="test_solution();" value="Test"/>	
+				<input type="button"  class="white" onClick="show_solution();" value="Nascondi"/>	
+				<input type="button" class="white" onClick="test_solution();" value="Test"/>
+				
 			</div>
 
 
+			<canvas id="myCanvasA" style="position: flex; top: 20px;bottom:20px; border: 1px solid black;"></canvas>
 
 
+			<div style="text-align:center; margin: 50px">
+				<div class="clockInputs" id="clockInputs">
+					<table style="background-color: #a3a3a3; padding: 10px;">
+						<tr>
+							<td><input type="number" class="inputClock" id="innerClockValue0" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue1" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue2" onChange="set_clock_data();"/></td>
+						</tr>
+						<tr>
+							<td><input type="number" class="inputClock" id="innerClockValue3" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue4" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue5" onChange="set_clock_data();"/></td>
+						</t>
+						<tr>
+							<td><input type="number" class="inputClock" id="innerClockValue6" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue7" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue8" onChange="set_clock_data();"/></td>
+						</t>
+					</table>
 
-			<div class="clockInputs" id="clockInputs">
-				<table style="background-color: #a3a3a3; padding: 10px;">
-					<tr>
-						<td><input type="number" class="inputClock" id="innerClockValue0" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue1" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue2" onChange="set_clock_data();"/></td>
-					</tr>
-					<tr>
-						<td><input type="number" class="inputClock" id="innerClockValue3" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue4" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue5" onChange="set_clock_data();"/></td>
-					</t>
-					<tr>
-						<td><input type="number" class="inputClock" id="innerClockValue6" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue7" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue8" onChange="set_clock_data();"/></td>
-					</t>
-				</table>
-
-				<table style="background-color: #161616; padding: 10px;">
-					<tr>
-						<td><input type="number" class="inputClock" id="innerClockValue9" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue10" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue11" onChange="set_clock_data();"/></td>
-					</tr>
-					<tr>
-						<td><input type="number" class="inputClock" id="innerClockValue12" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue13" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue14" onChange="set_clock_data();"/></td>
-					</t>
-					<tr>
-						<td><input type="number" class="inputClock" id="innerClockValue15" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue16" onChange="set_clock_data();"/></td>
-						<td><input type="number" class="inputClock" id="innerClockValue17" onChange="set_clock_data();"/></td>
-					</t>
-				</table>				
+					<table style="background-color: #161616; padding: 10px;">
+						<tr>
+							<td><input type="number" class="inputClock" id="innerClockValue9" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue10" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue11" onChange="set_clock_data();"/></td>
+						</tr>
+						<tr>
+							<td><input type="number" class="inputClock" id="innerClockValue12" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue13" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue14" onChange="set_clock_data();"/></td>
+						</t>
+						<tr>
+							<td><input type="number" class="inputClock" id="innerClockValue15" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue16" onChange="set_clock_data();"/></td>
+							<td><input type="number" class="inputClock" id="innerClockValue17" onChange="set_clock_data();"/></td>
+						</t>
+					</table>				
+				</div>
 
 			</div>	
 
-			<canvas id="myCanvasA"></canvas>
-
-			<div id="shadow">&nbsp;</div>			
 	</span>
 
 	

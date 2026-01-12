@@ -33,6 +33,7 @@ class GameState {
     _to_stage_index(stage_index) {
         this.stage_start = new Date().getTime();
         this.current_stage_index = stage_index;
+        this.change();
     }
 
     get stage_timer_ms() {
@@ -96,7 +97,7 @@ class WelcomeStage extends GameStage {
         }
 
 		let title_img = document.getElementById("asset_title");
-		drawing_context.drawImage(title_img,this.layoutter.outer_clock_left,this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size,this.layoutter.outer_clock_size/2);
+		drawing_context.drawImage(title_img,this.layoutter.outer_clock_left,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size,this.layoutter.outer_clock_size/2);
 
         this.clock_drawer.draw_stack_mat("Sei pronto?",0);
     }
@@ -118,13 +119,13 @@ class InspectionStage extends GameStage {
         this.clickacle_elements=[
 
             //Clock
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left,0, this.layoutter.outer_clock_size,this.layoutter.outer_clock_size),
+            new ClickableArea(new Rect( this.layoutter.outer_clock_left,this.layoutter.outer_clock_top,this.layoutter.outer_clock_size,this.layoutter.outer_clock_size),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),
 
             //Stackmat
             new ClickableArea(new Rect((this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size,  
+					this.layoutter.stackmat_top,  
 					this.layoutter.stackmat_width,
 					this.layoutter.stackmat_height),
                 (game_state,x,y)=>{ game_state.next_stage()}
@@ -163,54 +164,54 @@ class SolveStage extends GameStage {
         
         this.clickacle_elements=[ 
             //Pin0
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 ,this.layoutter.outer_clock_size / 3 ,this.layoutter.inner_clock_size/3),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 ,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 3 ,this.layoutter.inner_clock_size/3),
                 (game_state,x,y)=>{ game_state.clock_view.current_pins[0].invert()}
             ),
             //Pin1
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.outer_clock_size / 3 ,this.layoutter.inner_clock_size/3),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 3 ,this.layoutter.inner_clock_size/3),
                 (game_state,x,y)=>{ game_state.clock_view.current_pins[1].invert()}
             ),
             //Pin2
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 ,this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.inner_clock_size/3),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 ,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.inner_clock_size/3),
                 (game_state,x,y)=>{ game_state.clock_view.current_pins[2].invert()}
             ),
             //Pin3
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.inner_clock_size/3),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 3 *2 ,this.layoutter.inner_clock_size/3),
                 (game_state,x,y)=>{ game_state.clock_view.current_pins[3].invert()}
             ),
             //gear UL
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_UL(1)}
             ),         
             //gear UR
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_UR(1)}
             ),                           
             //gear DL
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_DL(1)}
             ),         
             //gear DR
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.rotate_gear_DR(1)}
             ),  
             //gear U - flipX2               
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*3,this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*3,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),  
 
             //gear D - flipX2               
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*3,this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*3,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6*5,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),  
 
             //gear L - flipY2               
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_size / 6*3,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6*3,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipY2()}
             ),  
 
             //gear R - flipX2               
-            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_size / 6*3,this.layoutter.inner_clock_size/2),
+            new ClickableArea(new Circle( this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/6*5,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size / 6*3,this.layoutter.inner_clock_size/2),
                 (game_state,x,y)=>{ game_state.clock_view.flipY2()}
             ),  
 
@@ -261,7 +262,7 @@ class WonStage extends GameStage {
         this.clickacle_elements=[
 
             //Clock
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left,0, this.layoutter.outer_clock_size,this.layoutter.outer_clock_size),
+            new ClickableArea(new Rect( this.layoutter.outer_clock_left,this.layoutter.outer_clock_top, this.layoutter.outer_clock_size,this.layoutter.outer_clock_size),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),
 
@@ -313,7 +314,7 @@ class LoseStage extends GameStage {
         this.clickacle_elements=[
 
             //Clock
-            new ClickableArea(new Rect( this.layoutter.outer_clock_left,0, this.layoutter.outer_clock_size,this.layoutter.outer_clock_size),
+            new ClickableArea(new Rect( this.layoutter.outer_clock_left,this.layoutter.outer_clock_top, this.layoutter.outer_clock_size,this.layoutter.outer_clock_size),
                 (game_state,x,y)=>{ game_state.clock_view.flipX2()}
             ),
 
@@ -401,6 +402,11 @@ class ClockGame {
     draw(changed) {
         if (changed || this.debug) {
             this.drawing_context.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+            this.drawing_context.lineWidth = 10;
+			this.drawing_context.strokeStyle="lightblue";
+            this.drawing_context.beginPath();
+            this.drawing_context.rect(0,0,this.canvas.clientWidth, this.canvas.clientHeight);
+            this.drawing_context.stroke();
         }
 		this.drawing_context.resetTransform();       
         this.drawing_context.translate(0,0) ;
@@ -412,10 +418,12 @@ class ClockGame {
             this.drawing_context.translate(0,0) ;
             
             this.current_stage.clickacle_elements.forEach( (e)=> {
+                this.drawing_context.lineWidth = 2;
                 this.drawing_context.strokeStyle=this._debug_mouse != undefined && e.is_inside(this._debug_mouse.x,this._debug_mouse.y) ? "lightblue" :"red";
                 e.area.draw(this.drawing_context)
             });
             if (this._debug_mouse != undefined) {
+                this.drawing_context.lineWidth = 2;
                 this.drawing_context.beginPath();
                 this.drawing_context.moveTo(0,0);
                 this.drawing_context.strokeStyle="lightblue";

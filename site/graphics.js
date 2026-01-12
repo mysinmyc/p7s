@@ -59,17 +59,27 @@
 			calculate() {
 				this.width=this.drawing_context.canvas.clientWidth;
 				this.height= this.drawing_context.canvas.clientHeight;
-				this.outer_clock_size = (this.width > this.height ? this.height: this.width)-100;
 
-				this.stackmat_width=Math.round( this.width > this.height ? this.outer_clock_size * 1.2 : this.width * 0.9);
-				this.stackmat_height=Math.round(this.stackmat_width / 5);
-				this.outer_clock_size = this.outer_clock_size-this.stackmat_height-40;
+				if (this.width>this.height) {
+					this.outer_clock_size = Math.round(this.height-200);
+					this.stackmat_width=Math.round( this.outer_clock_size);
+					this.stackmat_height=Math.round(this.stackmat_width / 5);
+					this.outer_clock_size = this.height-this.stackmat_height-200;
+					this.outer_clock_top=150;
+					this.stackmat_top=this.outer_clock_top+this.outer_clock_size+30;					
+				} else {
+					this.outer_clock_size = this.width-100;
+					this.stackmat_width=Math.round( this.width * 0.8);
+					this.stackmat_height=Math.round(this.stackmat_width / 5);
+					this.outer_clock_top=(this.height - this.stackmat_height - this.outer_clock_size)/2;
+					this.stackmat_top=this.height-(this.height - this.stackmat_height - this.outer_clock_size)/2;
+				}
+				
+				
 				this.outer_clock_left=(this.width-this.outer_clock_size)/2;
-				this.stackmat_top=this.outer_clock_size+ 40;
-
 				this.inner_clock_margin=20;
 				this.inner_clock_size = this.outer_clock_size  /3 - this.inner_clock_margin *2;
-
+				this.clock_border=Math.round(this.inner_clock_size/20);
 				this.pin_size = this.inner_clock_size / 6;
 			}
 		}
@@ -93,7 +103,7 @@
 
 			draw_outer_clock() {
 				this.drawing_context.beginPath();
-				this.drawing_context.arc(this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2, this.layoutter.outer_clock_size/2,0, 2* Math.PI);
+				this.drawing_context.arc(this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/2, this.layoutter.outer_clock_size/2,0, 2* Math.PI);
 				this.drawing_context.fillStyle = this.is_reverse_color ? "#161616" : "#dfdfdf";
 				this.drawing_context.fill();
 			}
@@ -102,7 +112,7 @@
 				const pins =this.clock_view.current_pins;
 				for (var cnt =0 ; cnt < 4 ; cnt++) {
 					this.drawing_context.beginPath();
-					this.drawing_context.arc(this.layoutter.outer_clock_left+(this.layoutter.outer_clock_size / 3)*(cnt%2+1),this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1), this.layoutter.pin_size/2, 0 , 2 * Math.PI);
+					this.drawing_context.arc(this.layoutter.outer_clock_left+(this.layoutter.outer_clock_size / 3)*(cnt%2+1),this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1), this.layoutter.pin_size/2, 0 , 2 * Math.PI);
 					if (pins[cnt].is_up) {
 						this.drawing_context.fillStyle= this.is_reverse_color ? "#aeaeae" : "#161616";
 						this.drawing_context.fill();
@@ -117,7 +127,7 @@
 						this.drawing_context.fontStyle="bold";
 						this.drawing_context.fillStyle="#faebc1";
 						this.drawing_context.beginPath();
-						this.drawing_context.fillText(pins[cnt].id, this.layoutter.outer_clock_left + this.layoutter.outer_clock_size / 3*(cnt%2+1)-10, this.layoutter.inner_clock_margin+this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1)+10, 20);					
+						this.drawing_context.fillText(pins[cnt].id, this.layoutter.outer_clock_left + this.layoutter.outer_clock_size / 3*(cnt%2+1)-10, this.layoutter.outer_clock_top+this.layoutter.inner_clock_margin+this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1)+10, 20);					
 					}
 				}
 			}	
@@ -131,7 +141,7 @@
 
 		
 				this.drawing_context.beginPath();
-				this.drawing_context.arc(0,0,width / 2-15, 0 , 2 * Math.PI);
+				this.drawing_context.arc(0,0,width / 2-this.layoutter.clock_border, 0 , 2 * Math.PI);
 				this.drawing_context.fillStyle=this.is_reverse_color ? "#aeaeae": "#313131";
 				this.drawing_context.fill();
 				 
@@ -143,7 +153,7 @@
                     }
                      
                     this.drawing_context.beginPath();
-					this.drawing_context.arc(0,width / 2* -1 + 7, h%3 ==0 ?  5: 2,0 , 2 * Math.PI);
+					this.drawing_context.arc(0,width / 2* -1 + this.layoutter.clock_border/2, h%3 ==0 ?  this.layoutter.clock_border/6:   this.layoutter.clock_border/12,0 , 2 * Math.PI);
 					this.drawing_context.fill();
 					this.drawing_context.rotate( Math.PI/6 );                    
 				}
@@ -156,7 +166,7 @@
 				this.drawing_context.strokeStyle=this.is_reverse_color ? "#171717": "#a1a1a1";
 				this.drawing_context.rotate( Math.PI/6*hour);
 				this.drawing_context.moveTo(0,0);
-				this.drawing_context.lineTo(0,width/2*-1+20);
+				this.drawing_context.lineTo(0,width/2-this.layoutter.clock_border-5);
 				this.drawing_context.stroke();
 			}
 
@@ -171,7 +181,7 @@
 					const value = inner_clocks[cnt].value;
 					const outer_size=this.layoutter.outer_clock_size/3;
 					const centerX=(cnt%3)*outer_size+outer_size/2+this.layoutter.outer_clock_left;
-					const centerY=Math.trunc(cnt/3)*outer_size+outer_size/2;
+					const centerY=this.layoutter.outer_clock_top+Math.trunc(cnt/3)*outer_size+outer_size/2;
 
                     
                     this.drawing_context.resetTransform();
@@ -205,24 +215,6 @@
 			}
 
 			draw_stack_mat(description,value) {
-
-							/*
-				this.drawing_context.resetTransform();
-				this.drawing_context.translate(0,0);
-				this.drawing_context.beginPath();
-				this.drawing_context.fillStyle = "black";
-				this.drawing_context.fillRect( (this.layoutter.width - this.layoutter.stackmat_width)/2, 
-					this.layoutter.outer_clock_size ,  
-					this.layoutter.stackmat_width,
-					this.layoutter.stackmat_height);
-
-				this.drawing_context.beginPath();
-				this.drawing_context.fillStyle = "gray";
-				this.drawing_context.fillRect( (this.layoutter.width - this.layoutter.stackmat_width)/2+this.layoutter.stackmat_width/5*2, 
-					this.layoutter.outer_clock_size +10,  
-					this.layoutter.stackmat_width/5,
-					this.layoutter.stackmat_height-20);
-				*/
 
 				let img_stackmat = document.getElementById("asset_stackmat");
 				this.drawing_context.drawImage( img_stackmat,
@@ -266,7 +258,10 @@
 
 			draw(drawing_context) {
 				drawing_context.beginPath();
-				drawing_context.rect(0,0,drawing_context.canvas.width,drawing_context.canvas.height);
+				drawing_context.moveTo(0,0);
+				drawing_context.lineTo(drawing_context.canvas.width,drawing_context.canvas.height);
+				drawing_context.moveTo(0,drawing_context.canvas.height);
+				drawing_context.lineTo(drawing_context.canvas.width,0);
 				drawing_context.stroke();
 			}
 		}

@@ -3,7 +3,7 @@
   			background-repeat: no-repeat;
   			background-attachment: fixed;
   			background-size: 100% 100%;
-			margin: 40px;
+			margin: 0px;
 		}
 
 		canvas {
@@ -83,7 +83,7 @@
 			vertical-align: middle;
 		}
 
-		.solution {
+		.solution_panel {
 			border-radius: 25px;
 			padding: 20px;
 			background-color: green;
@@ -92,24 +92,28 @@
 			margin-top: 20px;			
 			margin-bottom: 20px;			
 			width: fit-content;
+			position: fixed;
+			top:40%;
+			right:20px;
 		}
 
         .clockInputs {
 			border-radius: 25px;
 			padding: 20px;
 			background-color: #fff3c1;
-			display: flex; 
 			gap: 20px;
 			width: fit-content;
-			margin-top: 20px;			
-			margin-bottom: 20px;			
 			display: none;
+			margin:auto;
 		}
 
-		.settings {
+		.settings_panel {
 			display: none;
 			margin-top: 20px;			
-			margin-bottom: 20px;		
+			margin-bottom: 20px;	
+			position: fixed; 
+			top: 120px;
+			right: 20px;
 		}
 
         .panel {
