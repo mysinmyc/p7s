@@ -287,13 +287,13 @@ class WonStage extends GameStage {
 
         if (game_state.last_solve.ranking==1) {
     		let title_img = document.getElementById("asset_coppa_oro");
-		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
+		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
         } else if (game_state.last_solve.ranking<4) {
     		let title_img = document.getElementById("asset_coppa_grigia");
-		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
+		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
         } else {
     		let title_img = document.getElementById("asset_medaglia");
-		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
+		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
         }
     }
 }
@@ -402,6 +402,9 @@ class ClockGame {
     draw(changed) {
         if (changed || this.debug) {
             this.drawing_context.clearRect(0, 0, this.canvas.clientWidth, this.canvas.clientHeight);
+        }
+
+        if (this.debug) {
             this.drawing_context.lineWidth = 10;
 			this.drawing_context.strokeStyle="lightblue";
             this.drawing_context.beginPath();

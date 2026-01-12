@@ -79,7 +79,7 @@
 				this.outer_clock_left=(this.width-this.outer_clock_size)/2;
 				this.inner_clock_margin=20;
 				this.inner_clock_size = this.outer_clock_size  /3 - this.inner_clock_margin *2;
-				this.clock_border=Math.round(this.inner_clock_size/20);
+				this.clock_border=Math.round(this.inner_clock_size/15);
 				this.pin_size = this.inner_clock_size / 6;
 			}
 		}
@@ -151,9 +151,10 @@
                     } else {
                         this.drawing_context.fillStyle=this.is_reverse_color ? "#979797": "#202020";
                     }
-                     
+                    
+					let point_radious= h%3 ==0 ?  this.layoutter.clock_border*0.3:   this.layoutter.clock_border*0.1;
                     this.drawing_context.beginPath();
-					this.drawing_context.arc(0,width / 2* -1 + this.layoutter.clock_border/2, h%3 ==0 ?  this.layoutter.clock_border/6:   this.layoutter.clock_border/12,0 , 2 * Math.PI);
+					this.drawing_context.arc(0,-width / 2+ this.layoutter.clock_border/2, point_radious, 0 , 2 * Math.PI);
 					this.drawing_context.fill();
 					this.drawing_context.rotate( Math.PI/6 );                    
 				}
@@ -161,12 +162,12 @@
 
 			draw_hour(hour,width) {
 				this.drawing_context.beginPath();
-				this.drawing_context.lineWidth = 5;
+				this.drawing_context.lineWidth = 3;
 				this.drawing_context.lineCap = "round";
 				this.drawing_context.strokeStyle=this.is_reverse_color ? "#171717": "#a1a1a1";
 				this.drawing_context.rotate( Math.PI/6*hour);
 				this.drawing_context.moveTo(0,0);
-				this.drawing_context.lineTo(0,width/2-this.layoutter.clock_border-5);
+				this.drawing_context.lineTo(0,-width/2+this.layoutter.clock_border+5);
 				this.drawing_context.stroke();
 			}
 
