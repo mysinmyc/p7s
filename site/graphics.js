@@ -242,7 +242,7 @@
 
 				this.drawing_context.font="30px Arial";					
 				this.drawing_context.fillStyle =  "white";
-				this.drawing_context.fillText(str_value, (this.layoutter.width - this.layoutter.stackmat_width)/2+this.layoutter.stackmat_width/2, 
+				this.drawing_context.fillText(str_value, (this.layoutter.width - this.layoutter.stackmat_width)/2+this.layoutter.stackmat_width*0.4, 
 					this.layoutter.stackmat_top + this.layoutter.stackmat_height * 0.73,  
 					this.layoutter.stackmat_width/5,
 					);

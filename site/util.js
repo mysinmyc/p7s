@@ -9,8 +9,12 @@
         function truncate_ms(value_ms) {
             return Math.trunc(value_ms/10)*10;
         }
+
         function format_timer_ms(value_ms)  {
-            return pad_number(Math.trunc(value_ms/1000),2) + "." + pad_number(Math.trunc(value_ms/10)%100 ,2);
+            let count_secondi =Math.trunc(value_ms/1000);
+            let minuti=Math.trunc(count_secondi/60);
+            let secondi=count_secondi % 60;
+            return pad_number(minuti,2)+":"+ pad_number(secondi,2) + "." + pad_number(Math.trunc(value_ms/10)%100 ,2);
         }
 
         function format_time(time_ms) {

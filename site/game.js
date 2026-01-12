@@ -283,7 +283,7 @@ class WonStage extends GameStage {
             return;
         }
         this.clock_drawer.draw_clock();
-        this.clock_drawer.draw_stack_mat( game_state.last_solve.ranking == 1 ?  "PR" : ""+game_state.last_solve.ranking + " tempo", game_state.last_solve.elasped_ms );
+        this.clock_drawer.draw_stack_mat( game_state.last_solve.ranking == 1 ?  "PR" : ""+game_state.last_solve.ranking + " tempo", game_state.last_solve.elapsed_ms );
 
         if (game_state.last_solve.ranking==1) {
     		let title_img = document.getElementById("asset_coppa_oro");

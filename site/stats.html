@@ -26,7 +26,7 @@
                     cnt++;
                     let tr_element = document.createElement("tr");
                     let td_class= cnt%2==0 ? "row" :  "row_alt";
-                    tr_element.innerHTML= "<td class=\""+td_class+"\">"+cnt+"</td><td class=\""+td_class+"\">"+format_timer_ms(r.elasped_ms)+"</td><td class=\""+td_class+"\">"+format_time(r.time)+"</td><td class=\""+td_class+"\">"+format_scramble(r.scramble)+"</td>";
+                    tr_element.innerHTML= "<td class=\""+td_class+"\">"+cnt+"</td><td class=\""+td_class+"\">"+format_timer_ms(r.elapsed_ms)+"</td><td class=\""+td_class+"\">"+format_time(r.time)+"</td><td class=\""+td_class+"\">"+format_scramble(r.scramble)+"</td>";
                     document.getElementById("tbl_best").appendChild(tr_element);
                 });
                 
@@ -35,7 +35,7 @@
                     let r=stats_manager.stats.recent[stats_manager.stats.recent.length-cnt];
                     let tr_element = document.createElement("tr");
                     let td_class= cnt%2==0 ? "row" :  "row_alt";
-                    tr_element.innerHTML= "</td><td class=\""+td_class+"\">"+format_timer_ms(r.elasped_ms)+"</td><td class=\""+td_class+"\">"+format_time(r.time)+"</td><td class=\""+td_class+"\">"+format_scramble(r.scramble)+"</td>";
+                    tr_element.innerHTML= "</td><td class=\""+td_class+"\">"+format_timer_ms(r.elapsed_ms)+"</td><td class=\""+td_class+"\">"+format_time(r.time)+"</td><td class=\""+td_class+"\">"+format_scramble(r.scramble)+"</td>";
                     document.getElementById("tbl_recenti").appendChild(tr_element);
 
                 }
@@ -45,18 +45,15 @@
                     pr_element.innerHTML="non disponibile";
                 } else {
                     let pr=stats_manager.stats.best[0];
-                    pr_element.innerHTML=format_timer_ms(pr.elasped_ms)+" registrato il "+format_time(pr.time);
+                    pr_element.innerHTML=format_timer_ms(pr.elapsed_ms)+" registrato il "+format_time(pr.time);
                 }
 
                 let avg5_element = document.getElementById("avg5");
-                if (stats_manager.stats.recent.length <5) {
+                let avg_value=stats_manager.average_Ao5;
+                if (avg_value==-1) {
                     avg5_element.innerHTML="non disponibile";
                 } else {
-                    let sum=0;
-                    for (let cnt=1 ; cnt <=5;cnt++) {
-                        sum+=truncate_ms(stats_manager.stats.recent[stats_manager.stats.recent.length-cnt].elasped_ms);
-                    }
-                    avg5_element.innerHTML=format_timer_ms(Math.trunc(sum/5));
+                    avg5_element.innerHTML=format_timer_ms(avg_value);
 
                 }
             }
@@ -78,8 +75,8 @@
         </div>
 
         <div class="panel" style="margin-top: 60px">
-            <div class="panel_title">Media</div>
-            Tempo medio ultimi 5 <span id="avg5"></span>
+            <div class="panel_title">Media Ao5</div>
+            Tempo medio ultimi 5 <span id="avg5"></span> <br/><br/> La media &egrave; ottenuta prendendo gli ultimi 5 tempi esclusi il migliore e il peggiore
         </div>
 
         <div class="panel" style="margin-top: 60px;">
