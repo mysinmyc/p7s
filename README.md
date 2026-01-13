@@ -1,8 +1,9 @@
 # P7S
 Clock - Palestra 7 simul
 
-Questa paginetta web è stata creata per allenarsi alla fase di memorizza per la risoluzione del clock con il metodo 7simul
+Questa paginetta web è stata creata per allenarsi nella fase di memorizzazione per la risoluzione del clock con il metodo 7simul
 
+In ogni caso il gioco &egrave pienamente funzionante.
 
 ## Metodo 7simul BPAUL flip 
 

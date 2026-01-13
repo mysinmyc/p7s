@@ -21,18 +21,21 @@ class StatsManager {
         if (this.stats.model_version != undefined && this.stats.model_version >= empty_stats.model_version ) {
             return false;
         }
-        this.stats.best.forEach(e => {
-            if (e.elasped_ms != undefined) {
-                e.elapsed_ms = e.elasped_ms;
-                delete e['elasped_ms'];
-            }
-        });
-        this.stats.recent.forEach(e => {
-            if (e.elasped_ms != undefined) {
-                e.elapsed_ms = e.elasped_ms;
-                delete e['elasped_ms'];
-            }
-        });        
+        if (this.stats.model_version == undefined || this.stats.model_version < 2) {
+            this.stats.best.forEach(e => {
+                if (e.elasped_ms != undefined) {
+                    e.elapsed_ms = e.elasped_ms;
+                    delete e['elasped_ms'];
+                }
+            });
+            this.stats.recent.forEach(e => {
+                if (e.elasped_ms != undefined) {
+                    e.elapsed_ms = e.elasped_ms;
+                    delete e['elasped_ms'];
+                }
+            });  
+        }      
+        this.stats.model_version = empty_stats.model_version;
         return true;
     }
 
