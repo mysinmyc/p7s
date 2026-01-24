@@ -81,15 +81,24 @@ class StatsManager {
     }
 
     get average_Ao5() {
-        if (this.stats.recent.length < 5 ) {
+        return this.get_average_AoX(5);
+    }
+
+    get average_Ao12() {
+        return this.get_average_AoX(12);
+    }
+
+    get_average_AoX(number_of_resolutions) {
+        if (this.stats.recent.length < number_of_resolutions ) {
             return -1;
         }
-        let solves_to_compute=this.stats.recent.slice(this.stats.recent.length-5);
+        let solves_to_compute=this.stats.recent.slice(this.stats.recent.length-number_of_resolutions);
         solves_to_compute.sort( (a,b) => a.elapsed_ms - b.elapsed_ms);
         let sum=0;
-        for (let cnt = 1;cnt<4;cnt++) {
+        for (let cnt = 1;cnt<(number_of_resolutions-1);cnt++) {
             sum+= Math.trunc(solves_to_compute[cnt].elapsed_ms / 10);
         }
         return Math.trunc(sum/3)*10;
     }
+
 }

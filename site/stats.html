@@ -41,21 +41,30 @@
                 }
 
                 let pr_element = document.getElementById("pr");
+                let pr_date_element = document.getElementById("pr_date");
                 if (stats_manager.stats.best.length==0) {
                     pr_element.innerHTML="non disponibile";
                 } else {
                     let pr=stats_manager.stats.best[0];
-                    pr_element.innerHTML=format_timer_ms(pr.elapsed_ms)+" registrato il "+format_time(pr.time);
+                    pr_element.innerHTML=format_timer_ms(pr.elapsed_ms);
+                    pr_date_element.innerHTML=format_time(pr.time);
                 }
 
                 let avg5_element = document.getElementById("avg5");
-                let avg_value=stats_manager.average_Ao5;
-                if (avg_value==-1) {
+                let avg5_value=stats_manager.average_Ao5;
+                if (avg5_value==-1) {
                     avg5_element.innerHTML="non disponibile";
                 } else {
-                    avg5_element.innerHTML=format_timer_ms(avg_value);
-
+                    avg5_element.innerHTML=format_timer_ms(avg5_value);
                 }
+
+                let avg12_element = document.getElementById("avg12");
+                let avg12_value=stats_manager.average_Ao12;
+                if (avg12_value==-1) {
+                    avg12_element.innerHTML="non disponibile";
+                } else {
+                    avg12_element.innerHTML=format_timer_ms(avg12_value);
+                }               
             }
         </script>
     </head>
@@ -71,12 +80,31 @@
         
         <div class="panel" style="margin-top: 60px">
             <div class="panel_title">Personal Record</div>
-            Personal record <span id="pr"></span>
+            <table>
+                <tr>
+                    <td class="head">PR</td>
+                    <td class="head">Registrato il</td>
+                </tr>
+                <tr>
+                    <td class="row"><span id="pr"></span></td>
+                    <td class="row"><span id="pr_date"></span></td>
+                </tr>   
+            </table>             
         </div>
 
         <div class="panel" style="margin-top: 60px">
-            <div class="panel_title">Media Ao5</div>
-            Tempo medio ultimi 5 <span id="avg5"></span> <br/><br/> La media &egrave; ottenuta prendendo gli ultimi 5 tempi esclusi il migliore e il peggiore
+            <div class="panel_title">Media</div>
+            <table>
+                <tr>
+                    <td class="head">Media AO5</td>
+                    <td class="head">Media AO12</td>
+                </tr>
+                <tr>
+                    <td class="row"><span id="avg5"></span></td>
+                    <td class="row"><span id="avg12"></span></td>
+                </tr>   
+            </table>             
+             <br/><br/> La media &egrave; ottenuta prendendo gli ultimi X tempi esclusi il migliore e il peggiore
         </div>
 
         <div class="panel" style="margin-top: 60px;">
