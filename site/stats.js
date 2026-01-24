@@ -98,7 +98,7 @@ class StatsManager {
         for (let cnt = 1;cnt<(number_of_resolutions-1);cnt++) {
             sum+= Math.trunc(solves_to_compute[cnt].elapsed_ms / 10);
         }
-        return Math.trunc(sum/3)*10;
+        return Math.trunc(sum/(number_of_resolutions-2))*10;
     }
 
 }
