@@ -10,13 +10,12 @@ class GameState {
         this.current_stage_index = 0;
 
         this.last_scramble=[];
-        this.scramble_to_execute=12;
 
         this._change_counter=0;
     }
 
     scramble() {
-      this.last_scramble=new MyScramble(this.clock,this.clock_view).execute(this.scramble_to_execute);
+      this.last_scramble=new StandardScramble(this.clock,this.clock_view).execute();
     }
     
     next_stage() {

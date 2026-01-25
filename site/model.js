@@ -462,30 +462,15 @@
 			return key;
 		}
 
-		class MyScramble {
+		class ScrambleBase {
 		
 			constructor(clock,clock_view) {
 				this.clock=clock;
 				this.clock_view=clock_view;				
 			}
 			
-			execute(scramble_to_execute=12) {
-				var scramble=[];
-				this.clock.reset();
-				this.clock_view.reset();
-				for (let cnt=0; cnt<scramble_to_execute ; cnt++) {
-					const pins_config= Math.floor(Math.random() * 9);
-					const steps= roundHourDistance(Math.floor(Math.random() * 12));
-					this.execute_step(pins_config,steps);
-					scramble.push ({pins_config: pins_config, steps:steps, str: pins_config_to_str(pins_config) + Math.abs(steps) + (steps < 0 ?"-":"+") });
-
-					if (cnt==Math.trunc(scramble_to_execute/2)) {
-						this.clock_view.flipY2();
-						scramble.push ({str: "y2"});
-					}
-				}
-				this.clock_view.reset();
-				return scramble;
+			execute() {
+				throw new Error("not implemented");
 			}
 
 			execute_step(pins_config,steps) {
@@ -542,4 +527,60 @@
 					return;
 				}			
 			}						
+		}
+
+		class MyScramble extends ScrambleBase {
+
+			execute() {
+				var scramble_to_execute=12;
+				var scramble=[];
+				this.clock.reset();
+				this.clock_view.reset();
+				for (let cnt=0; cnt<scramble_to_execute ; cnt++) {
+					const pins_config= Math.floor(Math.random() * 9);
+					const steps= roundHourDistance(Math.floor(Math.random() * 12));
+					this.execute_step(pins_config,steps);
+					scramble.push ({pins_config: pins_config, steps:steps, str: pins_config_to_str(pins_config) + Math.abs(steps) + (steps < 0 ?"-":"+") });
+
+					if (cnt==Math.trunc(scramble_to_execute/2)) {
+						this.clock_view.flipY2();
+						scramble.push ({str: "y2"});
+					}
+				}
+				this.clock_view.reset();
+				return scramble;
+			}
+
+		}
+
+		const standard_scramble_steps = [
+			PinsConfig.UR, PinsConfig.DR, PinsConfig.DL,PinsConfig.UL,PinsConfig.U,PinsConfig.R,PinsConfig.D,PinsConfig.L,PinsConfig.ALL, 
+			-1, 
+			PinsConfig.U,PinsConfig.R,PinsConfig.D,PinsConfig.L,PinsConfig.ALL];	
+			
+			
+		class StandardScramble extends ScrambleBase {
+
+			execute() {
+
+				var scramble=[];
+				this.clock.reset();
+				this.clock_view.reset();
+				for (let cnt=0; cnt<standard_scramble_steps.length ; cnt++) {
+
+					let pins_config= standard_scramble_steps[cnt];
+
+					if (pins_config==-1) {
+						this.clock_view.flipY2();
+						scramble.push ({str: "y2"});
+					} else {
+						const steps= roundHourDistance(Math.floor(Math.random() * 12));
+						this.execute_step(pins_config,steps);
+						scramble.push ({pins_config: pins_config, steps:steps, str: pins_config_to_str(pins_config) + Math.abs(steps) + (steps < 0 ?"-":"+") });
+					}
+				}
+				this.clock_view.reset();
+				return scramble;
+
+			}
 		}
