@@ -12,6 +12,7 @@ class GameState {
         this.last_scramble=[];
 
         this._change_counter=0;
+
     }
 
     scramble() {

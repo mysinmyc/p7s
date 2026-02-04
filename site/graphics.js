@@ -1,6 +1,44 @@
 		
+		const COLOR_SCHEME_ATTRIBUTE="data-color_scheme";
 
-
+		const COLOR_SCHEMES = {
+			black: {
+				side_a_outer_clock: "#dfdfdf",
+				side_a_inner_clock: "#313131",				
+				side_a_inner_clock_border: "#aeaeae",				
+				side_a_dial: "#a1a1a1",				
+				side_a_pin_up:"#313131",
+				side_b_outer_clock: "#161616",
+				side_b_inner_clock: "#aeaeae",				
+				side_b_inner_clock_border: "#313131",				
+				side_b_dial: "#171717",
+				side_b_pin_up:"#a3a3a3" 
+			},
+			blue: {
+				side_a_outer_clock: "#cfcbc8",
+				side_a_inner_clock: "#225aa4",
+				side_a_inner_clock_border: "#cfcbc8",
+				side_a_dial: "#c4c3c8",
+				side_a_pin_up: "#1d6ac0",
+				side_b_outer_clock: "#1c5ba8",				
+				side_b_inner_clock: "#cecac7",
+				side_b_inner_clock_border: "#1d61af",		
+				side_b_dial: "#226db1",		
+				side_b_pin_up: "#e3d9cf"
+			},
+			pink: {
+				side_a_outer_clock: "#eef3f6",
+				side_a_inner_clock: "#f6ced6",								
+				side_a_inner_clock_border: "#eef3f6",		
+				side_a_dial: "#d5b5b8",
+				side_a_pin_up:"#f98ca4",
+				side_b_outer_clock: "#f6ced6",				
+				side_b_inner_clock: "#eef3f6",
+				side_b_inner_clock_border: "#f6ced6",
+				side_b_dial: "#eb8c9f",		
+				side_b_pin_up:"#e2d7d5"				
+			}
+		}
 		
 		class Rect {
 			constructor(x,y,width,height) {
@@ -91,6 +129,7 @@
 				this.layoutter = layoutter;
                 this.drawing_context = drawing_context;
 				this.show_values=false;
+				this.color_scheme = COLOR_SCHEMES[drawing_context.canvas.getAttribute(COLOR_SCHEME_ATTRIBUTE)]
 			}
 
             get is_reverse_color() {
@@ -104,7 +143,7 @@
 			draw_outer_clock() {
 				this.drawing_context.beginPath();
 				this.drawing_context.arc(this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/2, this.layoutter.outer_clock_size/2,0, 2* Math.PI);
-				this.drawing_context.fillStyle = this.is_reverse_color ? "#161616" : "#dfdfdf";
+				this.drawing_context.fillStyle = this.is_reverse_color ? this.color_scheme.side_b_outer_clock:this.color_scheme.side_a_outer_clock;
 				this.drawing_context.fill();
 			}
 
@@ -114,10 +153,10 @@
 					this.drawing_context.beginPath();
 					this.drawing_context.arc(this.layoutter.outer_clock_left+(this.layoutter.outer_clock_size / 3)*(cnt%2+1),this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/3*(Math.trunc(cnt/2)+1), this.layoutter.pin_size/2, 0 , 2 * Math.PI);
 					if (pins[cnt].is_up) {
-						this.drawing_context.fillStyle= this.is_reverse_color ? "#aeaeae" : "#161616";
+						this.drawing_context.fillStyle= this.is_reverse_color ? this.color_scheme.side_b_pin_up :  this.color_scheme.side_a_pin_up;
 						this.drawing_context.fill();
 					} else {
-						this.drawing_context.strokeStyle = this.is_reverse_color ? "#a3a3a3":"#313131" ;
+						this.drawing_context.strokeStyle = this.is_reverse_color ? this.color_scheme.side_b_pin_up: this.color_scheme.side_a_pin_up;
 						this.drawing_context.stroke();
 					}
 					
@@ -136,13 +175,13 @@
 
 				this.drawing_context.beginPath();
 				this.drawing_context.arc(0,0,width / 2, 0 , 2 * Math.PI);
-				this.drawing_context.fillStyle=this.is_reverse_color ? "#313131": "#aeaeae";
+				this.drawing_context.fillStyle=this.is_reverse_color ? this.color_scheme.side_b_inner_clock_border: this.color_scheme.side_a_inner_clock_border;
 				this.drawing_context.fill();
 
 		
 				this.drawing_context.beginPath();
 				this.drawing_context.arc(0,0,width / 2-this.layoutter.clock_border, 0 , 2 * Math.PI);
-				this.drawing_context.fillStyle=this.is_reverse_color ? "#aeaeae": "#313131";
+				this.drawing_context.fillStyle=this.is_reverse_color ? this.color_scheme.side_b_inner_clock: this.color_scheme.side_a_inner_clock;
 				this.drawing_context.fill();
 				 
 				for (let h = 0; h < 12; h++) {
@@ -164,7 +203,7 @@
 				this.drawing_context.beginPath();
 				this.drawing_context.lineWidth = 3;
 				this.drawing_context.lineCap = "round";
-				this.drawing_context.strokeStyle=this.is_reverse_color ? "#171717": "#a1a1a1";
+				this.drawing_context.strokeStyle=this.is_reverse_color ? this.color_scheme.side_b_dial: this.color_scheme.side_a_dial;
 				this.drawing_context.rotate( Math.PI/6*hour);
 				this.drawing_context.moveTo(0,0);
 				this.drawing_context.lineTo(0,-width/2+this.layoutter.clock_border+5);

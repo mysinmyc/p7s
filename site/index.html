@@ -12,9 +12,10 @@
 		var clock_game;
 
 		const default_settings = {
-			config_version: 4,
+			config_version: 5,
 			show_button_panel: false,			
 			show_editor: false,
+			color_scheme: Object.keys(COLOR_SCHEMES)[0]
 		}
 
 		var _globals  = { settings: default_settings };
@@ -35,14 +36,17 @@
 			chkEdit = document.getElementById("chkEdit");
 			chkButtonPanel = document.getElementById("chkButtonPanel");
 			chkDebug = document.getElementById("chkDebug");
+			cmbColorScheme = document.getElementById("cmbColorScheme");
 			if (uiToDomain) {
 				_globals.settings.show_editor = chkEdit.checked;
 				clock_game.debug = chkDebug.checked;
 				_globals.settings.show_button_panel = chkButtonPanel.checked;
+				_globals.settings.color_scheme = cmbColorScheme.value;
 			} else {
 				chkEdit.checked = _globals.settings.show_editor;
 				chkDebug.checked = clock_game.debug;
 				chkButtonPanel.checked = _globals.settings.show_button_panel;
+				cmbColorScheme.value = _globals.settings.color_scheme;
 			}
 		}
 
@@ -57,6 +61,8 @@
 			clockInputs.style.display = _globals.settings.show_editor ? "block" : "none";
 			button_panel = document.getElementById("button_panel");
 			button_panel.style.display = _globals.settings.show_button_panel ? "block" : "none";
+			canvas = document.getElementById("myCanvasA");
+			canvas.setAttribute(COLOR_SCHEME_ATTRIBUTE, _globals.settings.color_scheme);
 			clock_game.execute((c,v)=> {
 			},true);			
 		}
@@ -288,11 +294,19 @@
 			</div>
 						
 			<div class="settings_panel panel" id="settings">
+				Color scheme <select id="cmbColorScheme" onchange="set_settings();">
+					<script>
+						Object.keys(COLOR_SCHEMES).forEach( s => document.write("<option value=\""+s+"\">"+s+"</option>"))
+					</script>
+				</select>
+				<br/>
+				<br/>
 				<input type="checkbox" id="chkEdit" onClick="set_settings();"/>Editor
 				&nbsp;
 				<input type="checkbox" id="chkButtonPanel" onClick="set_settings();"/>Mostra barra pulsanti
 				&nbsp;
 				<input type="checkbox" id="chkDebug" onClick="set_settings();"/>Debug
+				<br/>
 				<br/>
 				<span id="scramble"></span>			
 			</div>
@@ -306,7 +320,7 @@
 			</div>
 
 
-			<canvas id="myCanvasA" style="position: flex;bottom:20px;"></canvas>
+			<canvas id="myCanvasA" style="position: flex;bottom:20px;" data-color_scheme="black"></canvas>
 
 
 			<div style="text-align:center; margin: 50px">
