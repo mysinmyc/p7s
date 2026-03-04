@@ -1,4 +1,4 @@
-const empty_stats={ best: [], recent: [], model_version:2 };
+const empty_stats={ best: [], recent: [], model_version:3 };
 
 class StatsManager {
 
@@ -35,6 +35,9 @@ class StatsManager {
                 }
             });  
         }      
+        if (this.stats.model_version == undefined || this.stats.model_version < 3) {
+            this.stats.recent.forEach( s=> this.add_solve(s.time, s.elapsed_ms, s.scramble,false,true) )
+        }
         this.stats.model_version = empty_stats.model_version;
         return true;
     }
@@ -48,32 +51,36 @@ class StatsManager {
         localStorage.setItem("stats", JSON.stringify(this.stats));
     }
 
-    add_solve(time, elapsed_ms, scramble){
+    add_solve(time, elapsed_ms, scramble, add_to_history= true,add_to_best=true ){
         let solve = { time: time, elapsed_ms: elapsed_ms, scramble: scramble };
 
-        this.stats.recent.push(solve);
-        while (this.stats.recent.length > 50) {
-            this.stats.recent.shift();
-        }
-
-        var position = 0;
-        var added =false;
-        while (position<this.stats.best.length){
-            if ( solve.elapsed_ms < this.stats.best[position].elapsed_ms) {
-                solve.ranking=position+1;
-                this.stats.best.splice(position,0,solve);
-                added=true;
-                break;
+        if (add_to_history) {
+            this.stats.recent.push(solve);
+            while (this.stats.recent.length > 50) {
+                this.stats.recent.shift();
             }
-            position++;
-        }
-        if (!added) {
-            solve.ranking=this.stats.best.length+1;
-            this.stats.best.push(solve);
         }
 
-        while (this.stats.best.length > 50) {
-            this.stats.best.shift();
+        if (add_to_best){
+            var position = 0;
+            var added =false;
+            while (position<this.stats.best.length){
+                if ( solve.elapsed_ms < this.stats.best[position].elapsed_ms) {
+                    solve.ranking=position+1;
+                    this.stats.best.splice(position,0,solve);
+                    added=true;
+                    break;
+                }
+                position++;
+            }
+            if (!added) {
+                solve.ranking=this.stats.best.length+1;
+                this.stats.best.push(solve);
+            }
+
+            while (this.stats.best.length > 20) {
+                this.stats.best.pop();
+            }
         }
 
         this.save();
