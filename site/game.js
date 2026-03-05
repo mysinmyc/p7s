@@ -291,8 +291,11 @@ class WonStage extends GameStage {
         } else if (game_state.last_solve.ranking<4) {
     		let title_img = document.getElementById("asset_coppa_grigia");
 		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
-        } else {
+        } else if (game_state.last_solve.ranking<11) {            
     		let title_img = document.getElementById("asset_medaglia");
+		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
+        } else {
+            let title_img = document.getElementById("asset_tartaruga");
 		    drawing_context.drawImage(title_img,this.layoutter.outer_clock_left+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_top+this.layoutter.outer_clock_size/4,this.layoutter.outer_clock_size/2,this.layoutter.outer_clock_size/2);
         }
     }

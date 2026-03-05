@@ -16,13 +16,29 @@
                 current_date=current_date+1000;
                 stats_manager.add_solve(current_date, 15100+cnt, [{ str: 'TEST' }]);
             }
+
+
+            let solve1 =stats_manager.add_solve(current_date, 15099, [{ str: 'TEST' }],true,false);
+            console.assert(solve1.valid ==true);
+            let solve2 =stats_manager.add_solve(current_date, 15099, [{ str: 'TEST' }],true,false);
+            console.assert(solve2.valid ==false);
+
+            let solve3 =stats_manager.add_solve(current_date, 15099, [{ str: 'TEST' }],false,true);
+            console.assert(solve3.valid ==true);
+            let solve4 =stats_manager.add_solve(current_date, 15099, [{ str: 'TEST' }],false,true);
+            console.assert(solve4.valid ==false);
+
+            console.assert(stats_manager.stats.best.length==20);
+            console.assert(stats_manager.stats.best[0].elapsed_ms==15099);
+            console.assert(stats_manager.stats.recent[stats_manager.stats.recent.length-1].time == current_date);
+
             let best_html = "";
             let cnt = 0;
             stats_manager.stats.best.forEach(r => {
                 cnt++;
                 let tr_element = document.createElement("tr");
                 let td_class = cnt % 2 == 0 ? "row" : "row_alt";
-                tr_element.innerHTML = "<td class=\"" + td_class + "\">" + cnt + "</td><td class=\"" + td_class + "\">" + format_timer_ms(r.elapsed_ms) + "</td><td class=\"" + td_class + "\">" + format_time(r.time) + "</td><td class=\"" + td_class + "\">" + format_scramble(r.scramble) + "</td>";
+                tr_element.innerHTML = "<td class=\"" + td_class + "\">" + cnt + "</td><td class=\"" + td_class + "\">" +r.elapsed_ms + "</td><td class=\"" + td_class + "\">" + format_time(r.time) + "</td><td class=\"" + td_class + "\">" + format_scramble(r.scramble) + "</td>";
                 document.getElementById("tbl_best").appendChild(tr_element);
             });
 
@@ -30,14 +46,11 @@
                 let r = stats_manager.stats.recent[stats_manager.stats.recent.length - cnt];
                 let tr_element = document.createElement("tr");
                 let td_class = cnt % 2 == 0 ? "row" : "row_alt";
-                tr_element.innerHTML = "</td><td class=\"" + td_class + "\">" + format_timer_ms(r.elapsed_ms) + "</td><td class=\"" + td_class + "\">" + format_time(r.time) + "</td><td class=\"" + td_class + "\">" + format_scramble(r.scramble) + "</td>";
+                tr_element.innerHTML = "</td><td class=\"" + td_class + "\">" + r.elapsed_ms + "</td><td class=\"" + td_class + "\">" + format_time(r.time) + "</td><td class=\"" + td_class + "\">" + format_scramble(r.scramble) + "</td>";
                 document.getElementById("tbl_recenti").appendChild(tr_element);
 
             }
-
-            console.assert(stats_manager.stats.best.length==20);
-            console.assert(stats_manager.stats.best[0].elapsed_ms==15100);
-            console.assert(stats_manager.stats.recent[stats_manager.stats.recent.length-1].time == current_date);
+            
         }
     </script>
 </head>

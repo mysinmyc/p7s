@@ -52,12 +52,20 @@ class StatsManager {
     }
 
     add_solve(time, elapsed_ms, scramble, add_to_history= true,add_to_best=true ){
-        let solve = { time: time, elapsed_ms: elapsed_ms, scramble: scramble };
+        let solve = { time: time, elapsed_ms: elapsed_ms, scramble: scramble, valid: true };
 
         if (add_to_history) {
-            this.stats.recent.push(solve);
-            while (this.stats.recent.length > 50) {
-                this.stats.recent.shift();
+            if ( this.stats.recent.length > 0  &&
+                this.stats.recent[this.stats.recent.length -1].time == solve.time &&
+                this.stats.recent[this.stats.recent.length -1].elapsed_ms == solve.elapsed_ms
+             ) {
+                solve.valid =false;
+             } else {
+
+                this.stats.recent.push(solve);
+                while (this.stats.recent.length > 50) {
+                    this.stats.recent.shift();
+                }
             }
         }
 
@@ -65,7 +73,15 @@ class StatsManager {
             var position = 0;
             var added =false;
             while (position<this.stats.best.length){
-                if ( solve.elapsed_ms < this.stats.best[position].elapsed_ms) {
+
+                if ( solve.time == this.stats.best[position].time &&
+                    solve.elapsed_ms == this.stats.best[position].elapsed_ms
+                ) {
+                    added=true;
+                    solve.ranking = this.stats.best[position].ranking;
+                    solve.valid=false;
+                    break;
+                } else if ( solve.elapsed_ms < this.stats.best[position].elapsed_ms) {
                     solve.ranking=position+1;
                     this.stats.best.splice(position,0,solve);
                     added=true;
