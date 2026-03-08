@@ -173,7 +173,7 @@
     <div class="panel" style="margin-top: 60px;">
         <div class="panel_title">Scarica, ricarica statistiche</div>
         <input type="button" onclick="download_stats();" value="Download statistiche" />
-        <input type="file" onchange="import_stats_handler()" />
+        <input type="file"  onchange="import_stats_handler()"  accept="text/plain, .json" />
         <span id="import_status"></span>
     </div>
 
