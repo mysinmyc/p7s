@@ -1,142 +1,186 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="style.css" />
-        <script src="util.js"></script>
-        <script src="stats.js"></script>
-        <script>
 
-            function back() {
-                location="index.html";
+<head>
+    <link rel="stylesheet" href="style.css" />
+    <script src="util.js"></script>
+    <script src="stats.js"></script>
+    <script>
+
+        let stats_manager = new StatsManager();
+
+
+        function back() {
+            location = "index.html";
+        }
+
+        function cancella() {
+            let stats_manager = new StatsManager();
+            stats_manager.clear();
+            document.location = "?refresh=" + (new Date().getTime());
+        }
+
+        function init() {
+
+            stats_manager.init();
+            let best_html = "";
+            let cnt = 0;
+            stats_manager.stats.best.forEach(r => {
+                cnt++;
+                let tr_element = document.createElement("tr");
+                let td_class = cnt % 2 == 0 ? "row" : "row_alt";
+                tr_element.innerHTML = "<td class=\"" + td_class + "\">" + cnt + "</td><td class=\"" + td_class + "\">" + format_timer_ms(r.elapsed_ms) + "</td><td class=\"" + td_class + "\">" + format_time(r.time) + "</td><td class=\"" + td_class + "\">" + format_scramble(r.scramble) + "</td>";
+                document.getElementById("tbl_best").appendChild(tr_element);
+            });
+
+
+            for (let cnt = 1; cnt <= stats_manager.stats.recent.length && cnt < 21; cnt++) {
+                let r = stats_manager.stats.recent[stats_manager.stats.recent.length - cnt];
+                let tr_element = document.createElement("tr");
+                let td_class = cnt % 2 == 0 ? "row" : "row_alt";
+                tr_element.innerHTML = "</td><td class=\"" + td_class + "\">" + format_timer_ms(r.elapsed_ms) + "</td><td class=\"" + td_class + "\">" + format_time(r.time) + "</td><td class=\"" + td_class + "\">" + format_scramble(r.scramble) + "</td>";
+                document.getElementById("tbl_recenti").appendChild(tr_element);
+
             }
 
-            function cancella() {
-                let stats_manager = new StatsManager();
-                stats_manager.clear();
-                document.location="?refresh="+(new Date().getTime());
-            }          
-
-            function init() {
-                
-                let stats_manager = new StatsManager();
-                stats_manager.init();
-
-                let best_html="";
-                let cnt=0;
-                stats_manager.stats.best.forEach(r => {
-                    cnt++;
-                    let tr_element = document.createElement("tr");
-                    let td_class= cnt%2==0 ? "row" :  "row_alt";
-                    tr_element.innerHTML= "<td class=\""+td_class+"\">"+cnt+"</td><td class=\""+td_class+"\">"+format_timer_ms(r.elapsed_ms)+"</td><td class=\""+td_class+"\">"+format_time(r.time)+"</td><td class=\""+td_class+"\">"+format_scramble(r.scramble)+"</td>";
-                    document.getElementById("tbl_best").appendChild(tr_element);
-                });
-                
-
-                for (let cnt=1 ; cnt <= stats_manager.stats.recent.length && cnt <21;cnt++) {
-                    let r=stats_manager.stats.recent[stats_manager.stats.recent.length-cnt];
-                    let tr_element = document.createElement("tr");
-                    let td_class= cnt%2==0 ? "row" :  "row_alt";
-                    tr_element.innerHTML= "</td><td class=\""+td_class+"\">"+format_timer_ms(r.elapsed_ms)+"</td><td class=\""+td_class+"\">"+format_time(r.time)+"</td><td class=\""+td_class+"\">"+format_scramble(r.scramble)+"</td>";
-                    document.getElementById("tbl_recenti").appendChild(tr_element);
-
-                }
-
-                let pr_element = document.getElementById("pr");
-                let pr_date_element = document.getElementById("pr_date");
-                if (stats_manager.stats.best.length==0) {
-                    pr_element.innerHTML="non disponibile";
-                } else {
-                    let pr=stats_manager.stats.best[0];
-                    pr_element.innerHTML=format_timer_ms(pr.elapsed_ms);
-                    pr_date_element.innerHTML=format_time(pr.time);
-                }
-
-                let avg5_element = document.getElementById("avg5");
-                let avg5_value=stats_manager.average_Ao5;
-                if (avg5_value==-1) {
-                    avg5_element.innerHTML="non disponibile";
-                } else {
-                    avg5_element.innerHTML=format_timer_ms(avg5_value);
-                }
-
-                let avg12_element = document.getElementById("avg12");
-                let avg12_value=stats_manager.average_Ao12;
-                if (avg12_value==-1) {
-                    avg12_element.innerHTML="non disponibile";
-                } else {
-                    avg12_element.innerHTML=format_timer_ms(avg12_value);
-                }               
+            let pr_element = document.getElementById("pr");
+            let pr_date_element = document.getElementById("pr_date");
+            if (stats_manager.stats.best.length == 0) {
+                pr_element.innerHTML = "non disponibile";
+            } else {
+                let pr = stats_manager.stats.best[0];
+                pr_element.innerHTML = format_timer_ms(pr.elapsed_ms);
+                pr_date_element.innerHTML = format_time(pr.time);
             }
-        </script>
-    </head>
-    <body onLoad="init()" style="margin: 40px;">
-        <div class="title">
-            <img src="title.png" width="400px"/>
-        </div>
 
-			
-        <div class="buttonBar" style="position: fixed;top: 20px;right: 20px;">
-            <input type="button" onClick="back();" value="Indietro"/>				
-        </div>        
-        
-        <div class="panel" style="margin-top: 60px">
-            <div class="panel_title">Personal Record</div>
-            <table>
+            let avg5_element = document.getElementById("avg5");
+            let avg5_value = stats_manager.average_Ao5;
+            if (avg5_value == -1) {
+                avg5_element.innerHTML = "non disponibile";
+            } else {
+                avg5_element.innerHTML = format_timer_ms(avg5_value);
+            }
+
+            let avg12_element = document.getElementById("avg12");
+            let avg12_value = stats_manager.average_Ao12;
+            if (avg12_value == -1) {
+                avg12_element.innerHTML = "non disponibile";
+            } else {
+                avg12_element.innerHTML = format_timer_ms(avg12_value);
+            }
+        }
+
+
+
+        function download_stats() {
+            download_into_file("p7s_stats_" + new Date().toISOString() + ".json", stats_manager.get_raw())
+        }
+
+        function import_stats_handler(e) {
+
+            const import_status = document.getElementById("import_status");
+            const file = event.target.files[0];
+            if (!file) {
+                import_status.innerHTML = "ERROR: no file specified";
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => {
+                import_status.innerHTML = "Starting import...";
+                try{
+                    stats_manager.import_raw(reader.result);
+                    import_status.innerHTML = "Import succeded";
+                    init();
+                }catch(e){
+                    import_status.innerHTML = "Import failed: "+e;
+                }  
+            };
+            reader.onerror = () => {
+                import_status.innerHTML = "file import error";
+                return;
+                
+            };
+            reader.readAsText(file);    
+        }
+    </script>
+</head>
+
+<body onLoad="init()" style="margin: 40px;">
+    <div class="title">
+        <img src="title.png" width="400px" />
+    </div>
+
+
+    <div class="buttonBar" style="position: fixed;top: 20px;right: 20px;">
+        <input type="button" onClick="back();" value="Indietro" />
+    </div>
+
+    <div class="panel" style="margin-top: 60px">
+        <div class="panel_title">Personal Record</div>
+        <table>
+            <tr>
+                <td class="head">PR</td>
+                <td class="head">Registrato il</td>
+            </tr>
+            <tr>
+                <td class="row"><span id="pr"></span></td>
+                <td class="row"><span id="pr_date"></span></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="panel" style="margin-top: 60px">
+        <div class="panel_title">Media</div>
+        <table>
+            <tr>
+                <td class="head">Media AO5</td>
+                <td class="head">Media AO12</td>
+            </tr>
+            <tr>
+                <td class="row"><span id="avg5"></span></td>
+                <td class="row"><span id="avg12"></span></td>
+            </tr>
+        </table>
+        <br /><br /> La media &egrave; ottenuta prendendo gli ultimi X tempi esclusi il migliore e il peggiore
+    </div>
+
+    <div class="panel" style="margin-top: 60px;">
+        <div class="panel_title">Risultati migliori</div>
+        <table>
+            <tbody id="tbl_best">
                 <tr>
-                    <td class="head">PR</td>
-                    <td class="head">Registrato il</td>
+                    <td class="head">posizione</td>
+                    <td class="head">tempo</td>
+                    <td class="head">registrato il</td>
+                    <td class="head">scramble</td>
                 </tr>
-                <tr>
-                    <td class="row"><span id="pr"></span></td>
-                    <td class="row"><span id="pr_date"></span></td>
-                </tr>   
-            </table>             
-        </div>
+            </tbody>
+        </table>
+    </div>
 
-        <div class="panel" style="margin-top: 60px">
-            <div class="panel_title">Media</div>
-            <table>
+    <div class="panel" style="margin-top: 60px;">
+        <div class="panel_title">Recenti</div>
+        <table>
+            <tbody id="tbl_recenti">
                 <tr>
-                    <td class="head">Media AO5</td>
-                    <td class="head">Media AO12</td>
+                    <td class="head">tempo</td>
+                    <td class="head">registrato il</td>
+                    <td class="head">scramble</td>
                 </tr>
-                <tr>
-                    <td class="row"><span id="avg5"></span></td>
-                    <td class="row"><span id="avg12"></span></td>
-                </tr>   
-            </table>             
-             <br/><br/> La media &egrave; ottenuta prendendo gli ultimi X tempi esclusi il migliore e il peggiore
-        </div>
+            </tbody>
+        </table>
+    </div>
 
-        <div class="panel" style="margin-top: 60px;">
-            <div class="panel_title">Risultati migliori</div>
-            <table>
-                <tbody id="tbl_best">
-                    <tr>
-                            <td class="head">posizione</td>
-                            <td class="head">tempo</td>
-                            <td class="head">registrato il</td>
-                            <td class="head">scramble</td>
-                        </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="panel" style="margin-top: 60px;">
+        <div class="panel_title">Scarica, ricarica statistiche</div>
+        <input type="button" onclick="download_stats();" value="💾 Download statistiche" />
+        <input type="file" onchange="import_stats_handler()" />
+        <span id="import_status"></span>
+    </div>
 
-        <div class="panel" style="margin-top: 60px;">
-            <div class="panel_title">Recenti</div>
-            <table>
-                <tbody id="tbl_recenti">
-                    <tr>
-                        <td class="head">tempo</td>
-                        <td class="head">registrato il</td>
-                        <td class="head">scramble</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>        
+    <div class="panel" style="margin-top: 60px;">
+        <div class="panel_title">Altre azioni</div>
+        <input type="button" onclick="cancella();" value="❌ Cancella Statistiche" />
+    </div>
+</body>
 
-        <div class="panel" style="margin-top: 60px;">
-            <div class="panel_title">Azioni</div>
-            <input type="button" onclick="cancella();" value="Cancella Statistiche"/>
-        </div>          
-    </body>
 </html>

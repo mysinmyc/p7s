@@ -51,6 +51,26 @@ class StatsManager {
         localStorage.setItem("stats", JSON.stringify(this.stats));
     }
 
+
+    get_raw() {
+        return localStorage.getItem("stats") ?? JSON.stringify(empty_stats); 
+    }
+
+    import_raw(stats_string) {
+        
+        let new_stats = JSON.parse(stats_string);
+        let new_stats_keys=Object.keys(new_stats)
+        Object.keys(empty_stats).forEach( function(k) {
+            if (! new_stats_keys.includes(k)) {
+                throw new Error("key "+k+" not in stats info");
+            }
+        });
+       
+        this.stats = new_stats;
+        this.save();
+        this.init();
+    }
+
     add_solve(time, elapsed_ms, scramble, add_to_history= true,add_to_best=true ){
         let solve = { time: time, elapsed_ms: elapsed_ms, scramble: scramble, valid: true };
 

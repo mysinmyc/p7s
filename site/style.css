@@ -32,7 +32,8 @@
         }
 
 
-		input[type=button] {
+		input[type=button],
+		input[type=file]::file-selector-button {
 			background-color: #925892;
 			border: none;
 			color: white;
@@ -74,7 +75,6 @@
 		}
 
 		input[type=checkbox] {width:30px; height:30px;}
-
 
 		.buttonBar {
 			border-radius: 25px;
